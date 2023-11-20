@@ -16,12 +16,13 @@ from .atc_mi_adv_format import atc_mi_advertising_format
 from . import construct_module
 from .__version__ import __version__
 
+
 class AtcMiConstructFrame(wx.Frame):
     icon_image = PyEmbeddedImage(
-        "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAHFJ"
-        "REFUWIXt1jsKgDAQRdF7xY25cpcWC60kioI6Fm/ahHBCMh+BRmGMnAgEWnvPpzK8dvrFCCCA"
-        "coD8og4c5Lr6WB3Q3l1TBwLYPuF3YS1gn1HphgEEEABcKERrGy0E3B0HFJg7C1N/f/kTBBBA"
-        "+Vi+AMkgFEvBPD17AAAAAElFTkSuQmCC")
+        "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAA"
+        "HFJREFUWIXt1jsKgDAQRdF7xY25cpcWC60kioI6Fm/ahHBCMh+BRmGMnAgEWnvPpzK8dv"
+        "rFCCCAcoD8og4c5Lr6WB3Q3l1TBwLYPuF3YS1gn1HphgEEEABcKERrGy0E3B0HFJg7C1N"
+        "/f/kTBBBA+Vi+AMkgFEvBPD17AAAAAElFTkSuQmCC")
 
     wx_log = None
 
@@ -118,6 +119,12 @@ def main():
         action='store_true',
         help="enable Inspection (Ctrl-Alt-I)")
     parser.add_argument(
+        '-d',
+        "--disable",
+        dest='disable',
+        action='store_true',
+        help="Disable decryption errors, showing them in the status bar")
+    parser.add_argument(
         '-V',
         "--version",
         dest='version',
@@ -141,6 +148,16 @@ def main():
         loadfile=loadfile,
         ble_start=args.ble_start
     )
+
+    if args.disable:
+        # Monkey patch handle_decrypt_error to show errors on the status line
+        def handle_decrypt_error(descr):
+            frame.SetStatusText("ERROR: " + descr)
+            return b""
+        construct_module.atc_mi_construct_adapters.handle_decrypt_error = (
+            handle_decrypt_error
+        )
+
     frame.Show(True)
     app.MainLoop()
 

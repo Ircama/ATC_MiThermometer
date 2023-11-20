@@ -749,7 +749,7 @@ With a proper Python installation, the entry-point `atc_mi_advertising` should a
 Program command line options:
 
 ```
-usage: atc_mi_advertising [-h] [-s] [-m] [-l LOG_DATA_FILE [LOG_DATA_FILE ...]] [-i] [-V]
+usage: atc_mi_advertising [-h] [-s] [-m] [-l LOG_DATA_FILE [LOG_DATA_FILE ...]] [-i] [-d] [-V]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -758,6 +758,7 @@ optional arguments:
   -l LOG_DATA_FILE [LOG_DATA_FILE ...], --load LOG_DATA_FILE [LOG_DATA_FILE ...]
                         log data file(s) to be automatically loaded at startup.
   -i, --inspectable     enable Inspection (Ctrl-Alt-I)
+  -d, --disable         Disable decryption errors, showing them in the status bar
   -V, --version         Print version and exit
 
 Xiaomi Mijia Thermometer - BLE Advertisement Browser

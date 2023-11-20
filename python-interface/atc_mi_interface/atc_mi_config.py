@@ -86,6 +86,7 @@ class IntegerFormat(enum.Enum):
     Dec = enum.auto()
     Hex = enum.auto()
 
+
 command_structure = {
     CMD_ID_DNAME: {
         "name": "Device name",
@@ -234,6 +235,7 @@ read_only_parameters = [
     "Internal configuration|hw_cfg|reserved"
 ]
 
+
 def traverse_construct(construct, path, struct):
     report = ""
     EQUAL_SIGN = " = "
@@ -292,9 +294,13 @@ async def atc_characteristics(client, verbosity=False):
                     if not item[2] or len(name_bytes) == item[2]:  # length
                         if item[3]:  # Type
                             char_list.append(
-                                [char.handle, service.description,
-                                normalize_report(
-                                    str(item[1].parse(name_bytes)))])  # Construct
+                                [
+                                    char.handle, service.description,
+                                    normalize_report(
+                                        str(item[1].parse(name_bytes))
+                                    )
+                                ]
+                            )  # Construct
                         else:
                             try:
                                 string_data = normalize_report(
@@ -344,22 +350,28 @@ def gui_edit(editing_structure: dict, args: argparse.Namespace):
     try:
         import wx
     except (ImportError, ModuleNotFoundError):
-        print("wxPython was not imported. Run the following:\n"
-            "pip3 install -r requirements.txt -r gui-requirements.txt")
+        print(
+            "wxPython was not imported. Run the following:\n"
+            "pip3 install -r requirements.txt -r gui-requirements.txt"
+        )
         sys.exit(2)
     try:
         from construct_gallery import ConfigEditorPanel
     except (ImportError, ModuleNotFoundError):
-        print('Failed to import the "construct_gallery" module.\nPlease use '
+        print(
+            'Failed to import the "construct_gallery" module.\nPlease use '
             "an updated version of construct_gallery. Run the following:\n"
-            "pip3 install -r requirements.txt -r gui-requirements.txt")
+            "pip3 install -r requirements.txt -r gui-requirements.txt"
+        )
         sys.exit(2)
     try:
         import construct_editor.core.custom as custom
     except (ImportError, ModuleNotFoundError):
-        print('Failed to import the "construct_editor" module.\n'
+        print(
+            'Failed to import the "construct_editor" module.\n'
             "Run the following:\n"
-            "pip3 install -r requirements.txt -r gui-requirements.txt")
+            "pip3 install -r requirements.txt -r gui-requirements.txt"
+        )
         sys.exit(2)
 
     custom.add_custom_tunnel(BtHomeCodec, "BtHomeCodec")
@@ -568,7 +580,7 @@ async def atc_mi_configuration(args: argparse.Namespace):
                         await asyncio.sleep(SLEEP_TIMEOUT)
                     if not args.edit_list == [[]]:
                         data_out.append(
-                            {"display_report":[get_display_report(
+                            {"display_report": [get_display_report(
                                 editing_structure, "binary")]})
                 edited = False
                 if args.edit_list:
@@ -635,7 +647,7 @@ async def atc_mi_configuration(args: argparse.Namespace):
                         {"setting_date": ["Setting date:", args.set_date]})
                     set_date = bytes([CMD_ID_UTC_TIME]) + Int32ul.build(
                         calendar.timegm(time.localtime(time.time())))
-                    char_n[0] = CMD_ID_UTC_TIME + 0xEE00 # Set utc time
+                    char_n[0] = CMD_ID_UTC_TIME + 0xEE00  # Set utc time
                     await client.write_gatt_char(
                         characteristic_uuid, set_date, response=True)
                     await asyncio.sleep(SLEEP_TIMEOUT)
@@ -794,7 +806,8 @@ def main():
         dest='edit_list',
         action='append',
         help="Edit one or multiple values; "
-            "no value to dump editable parameters")
+             "no value to dump editable parameters"
+    )
     parser.add_argument(
         '-D',
         "--set_date",
@@ -806,9 +819,8 @@ def main():
         '--adjust',
         dest="delta",
         type=int,
-        help=
-        'Set the time delta adjustment '
-        '(-32767..32767, in 1/16 usec. for 1 sec.)',
+        help='Set the time delta adjustment '
+             '(-32767..32767, in 1/16 usec. for 1 sec.)',
         default=None)
     parser.add_argument(
         '-d',
@@ -823,8 +835,7 @@ def main():
         type=str,
         metavar='CSV_STRING',
         action='store',
-        help=
-            'Send 6 digits to LCD in the form "1,2,3,_,4,5" or "0xf5,0x05,..."'
+        help='Send 6 digits to LCD in the form "1,2,3,_,4,5" or "0xf5,0x05,..."'
     )
     parser.add_argument(
         '-s',
@@ -852,7 +863,7 @@ def main():
         dest='attempts',
         type=int,
         help='Set the max number of attempts to connect the device '
-            '(default=20)',
+             '(default=20)',
         default=20)
     parser.add_argument(
         '-e',
@@ -881,7 +892,6 @@ def main():
 
     ret = False
     data_out = None
-    es = {}
     args = parser.parse_args()
     if args.version:
         print(f'atc_mi_config version {__version__}')

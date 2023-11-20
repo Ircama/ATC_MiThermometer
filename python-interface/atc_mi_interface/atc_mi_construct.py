@@ -116,12 +116,13 @@ atc1441_enc_format = Struct(
 # Can be clear or encrypted
 # https://github.com/pvvx/ATC_MiThermometer/tree/master/InfoMijiaBLE
 
-mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/src/mi_beacon.h#L72-L97
+mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/src/mi_beacon.h#L77-L102
     "type" / Select(
-        Enum(Int16ul,
+        Enum(Int16ul,  # https://iot.mi.com/new/doc/accesses/direct-access/embedded-development/ble/object-definition
             XIAOMI_DATA_ID_Sleep                =0x1002,
             XIAOMI_DATA_ID_RSSI                 =0x1003,
             XIAOMI_DATA_ID_Temperature          =0x1004,
+            XIAOMI_DATA_ID_WaterBoil            =0x1005,
             XIAOMI_DATA_ID_Humidity             =0x1006,
             XIAOMI_DATA_ID_LightIlluminance     =0x1007,
             XIAOMI_DATA_ID_SoilMoisture         =0x1008,
@@ -143,6 +144,11 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             XIAOMI_DATA_ID_WeightAttributes     =0x101A,
             XIAOMI_DATA_ID_NoOneMovesOverTime   =0x101B,  # No one moves over time
             XIAOMI_DATA_ID_SmartPillow          =0x101C,
+            XIAOMI_DATA_ID_FormaldehydeNew      =0x101D,
+            XIAOMI_DATA_ID_BodyTemperature      =0x2000,
+            XIAOMI_DATA_ID_Bracelet             =0x2001,
+            XIAOMI_DATA_ID_VacuumCleaner        =0x2002,
+            XIAOMI_DATA_ID_BPBracelet           =0x2003,
             UNBOUND_DEVICE                      =0x0128,
         ),
         Enum(Int8ul,
@@ -151,20 +157,44 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
     ),
     "data" / Switch(this.type,  # https://github.com/pvvx/ATC_MiThermometer/blob/master/InfoMijiaBLE/Mijia%20BLE%20Object%20Definition.md
         {
+            "XIAOMI_DATA_ID_Sleep": Struct(  # 02
+                "type_length" / Const(b"\x01"),
+                "sleep" / Flag,
+            ),
+            "XIAOMI_DATA_ID_RSSI": Struct(  # 03
+                "type_length" / Const(b"\x01"),
+                "RSSI_level" / Int8ul,
+                "RSSI_level_unit" / Computed("dBm"),
+            ),
             "XIAOMI_DATA_ID_Temperature": Struct(  # 04
                 "type_length" / Const(b"\x02"),
                 "temperature" / Int16sl_x10,
                 "temperature_unit" / Computed("°C"),
+            ),
+            "XIAOMI_DATA_ID_WaterBoil": Struct(  # 05
+                "type_length" / Const(b"\x02"),
+                "power" / Int8ul,
+                "temperature" / Int8ul,
             ),
             "XIAOMI_DATA_ID_Humidity": Struct(  # 06
                 "type_length" / Const(b"\x02"),  # ranging from 0-1000
                 "humidity" / Int16ul_x10,  # 0..100 %
                 "humidity_unit" / Computed("%"),
             ),
-            "XIAOMI_DATA_ID_SoilECvalue": Struct(  # 09
+            "XIAOMI_DATA_ID_LightIlluminance": Struct(  # 07
+                "type_length" / Const(b"\x03"),
+                "illuminance" / Int24ul,  # Range: 0-120000
+                "illuminance_unit" / Computed("Lux"),
+            ),
+            "XIAOMI_DATA_ID_SoilMoisture": Struct(  # 08, Humidity percentage
+                "type_length" / Const(b"\x01"),
+                "moisture_level" / Int8ul,  # 0..100 %
+                "moisture_level_unit" / Computed("%"),
+            ),
+            "XIAOMI_DATA_ID_SoilECvalue": Struct(  # 09, Conductivity
                 "type_length" / Const(b"\x02"),
-                "conductivity" / Int16sl_x10,  # range: 0-5000
-                "conductivity_unit" / Computed("uS/cm"),
+                "conductivity" / Int16ul_x10,  # range: 0-5000
+                "conductivity_unit" / Computed("us/cm"),
             ),
             "XIAOMI_DATA_ID_Power": Struct(  # 0A
                 "battery_length" / Const(b"\x01"),
@@ -178,15 +208,139 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
                 "humidity" / Int16ul_x10,
                 "humidity_unit" / Computed("%"),
             ),
-            "XIAOMI_DATA_ID_SoilMoisture": Struct(  # 08
+            "XIAOMI_DATA_ID_Lock": Struct(  # 0E
                 "type_length" / Const(b"\x01"),
-                "moisture_level" / Int8ul,  # 0..100 %
-                "moisture_level_unit" / Computed("%"),
+                "lock" / BitStruct(
+                    "child lock status" / Flag,  # (1: open; 0: close)
+                    "oblique bolt state" / Flag,  # (1: pop up; 0: retract)
+                    "dull state" / Flag,  # (1: eject; 0: retract)
+                    "square bolt status" / Flag,  # (1: pop up; 0: retract)
+                ),
+                #   0x00: Unlock state (all bolts retracted)
+                #   0x04: The lock bolt pops out (the oblique bolt pops out)
+                #   0x05: Lock + lock bolt eject (square bolt, oblique bolt eject)
+                #   0x06: Reverse lock + bolt ejection (stay bolt, oblique bolt ejection)
+                #   0x07: All lock bolts pop out (square bolt, dull bolt, oblique bolt pop out)
             ),
-            "XIAOMI_DATA_ID_LightIlluminance": Struct(  # 07
-                "type_length" / Const(b"\x03"),
-                "illuminance" / Int24ul,  # Range: 0-120000
-                "illuminance_unit" / Computed("L"),
+            "XIAOMI_DATA_ID_Gate": Struct(  # 0F
+                "type_length" / Const(b"\x01"),
+                "gate" / Enum(Int8ul,
+                    XIAOMI_door_open      =0x00,
+                    XIAOMI_door_closed    =0x01,
+                    XIAOMI_door_error     =0xff,
+                )
+            ),
+            "XIAOMI_DATA_ID_Formaldehyde": Struct(  # 10
+                "type_length" / Const(b"\x02"),
+                "formaldehyde" / Int16ul_x100,
+                "formaldehyde_unit" / Computed("mg/m3"),
+            ),
+            "XIAOMI_DATA_ID_Bind": Struct(  # 11
+                "type_length" / Const(b"\x01"),
+                "bound" / Flag,
+            ),
+            "XIAOMI_DATA_ID_Switch": Struct(  # 12
+                "type_length" / Const(b"\x01"),
+                "switch" / Flag,
+            ),
+            "XIAOMI_DATA_ID_RemAmCons": Struct(  # 13, Remaining amount of consumables
+                "type_length" / Const(b"\x01"),
+                "consumables" / Int8ul,
+                "consumables_unit" / Computed("%"),
+            ),
+            "XIAOMI_DATA_ID_Flooding": Struct(  # 14
+                "type_length" / Const(b"\x01"),
+                "flooding" / Flag,
+            ),
+            "XIAOMI_DATA_ID_Smoke": Struct(  # 15
+                "type_length" / Const(b"\x01"),
+                "smoke" / Enum(Int8ul,
+                    XIAOMI_Smoke_Normal_Monitoring      =0x00,
+                    XIAOMI_Smoke_Fire_Alarm             =0x01,
+                    XIAOMI_Smoke_Equipment_Failure      =0x02,
+                )
+            ),
+            "XIAOMI_DATA_ID_Gas": Struct(  # 16
+                "type_length" / Const(b"\x01"),
+                "gas" / Flag,
+            ),
+            "XIAOMI_DATA_ID_NoOneMoves": Struct(  # 17, duration of the idle time, in seconds.
+                "type_length" / Const(b"\x04"),
+                "idle_time" / Int32ul,
+            ),
+            "XIAOMI_DATA_ID_LightIntensity": Struct(  # 18
+                "type_length" / Const(b"\x01"),
+                "light" / Flag,
+            ),
+            "XIAOMI_DATA_ID_DoorSensor": Struct(  # 19
+                "type_length" / Const(b"\x01"),
+                "door" / Enum(Int8ul,
+                    XIAOMI_door_open                =0x00,
+                    XIAOMI_door_closed              =0x01,
+                    XIAOMI_door_not_closed_in_time  =0x02,
+                    XIAOMI_door_reset               =0x03,
+                )
+            ),
+            "XIAOMI_DATA_ID_WeightAttributes": Struct(  # 1A
+                "type_length" / Const(b"\x02"),
+                "weight" / Int16ul,
+                "weight_unit" / Computed("grams"),
+            ),
+            "XIAOMI_DATA_ID_NoOneMovesOverTime": Struct(  # 1B
+                "type_length" / Const(b"\x01"),
+                "timeout_unmoved" / Flag,
+                # 0x00: means someone is moving
+                # 0x01: means no one is moving for X seconds
+                # Note: The user configures no one to move for X seconds on
+                #       the plug-in side. The firmware side stores this setting
+                #       value and reports this object after the time is reached.
+            ),
+            "XIAOMI_DATA_ID_SmartPillow": Struct(  # 1C
+                "type_length" / Const(b"\x01"),
+                "pillow" / Enum(Int8ul,
+                    XIAOMI_get_out_of_bed     =0x00,  # (not on the pillow)
+                    XIAOMI_on_the_bed         =0x01,  # (lie on the pillow)
+                )
+            ),
+            "XIAOMI_DATA_ID_FormaldehydeNew": Struct(  # 1D
+                "type_length" / Const(b"\x02"),
+                "formaldehyde" / Int16ul_x1000,
+                "formaldehyde_unit" / Computed("mg/m3"),
+            ),
+            "XIAOMI_DATA_ID_BodyTemperature": Struct(
+                "type_length" / Const(b"\x05"),
+                "skin temperature" / Int16sl_x100,
+                "PCB temperature" / Int16sl_x100,
+                "temperature_unit" / Computed("°C"),
+                "battery_power" / Int8ul,
+                "battery_power_unit" / Computed("%"),
+            ),
+            "XIAOMI_DATA_ID_Bracelet": Struct(
+                "type_length" / Const(b"\x04"),
+                "steps" / Int16ul,  # Number of steps
+                "sleep" / Enum(Int8ul,
+                    XIAOMI_bracelet_asleep    =0x01,  # (Falling asleep)
+                    XIAOMI_bracelet_waking_up =0x02,  # (waking up)
+                ),
+                "RSSI_level" / Int8ul,  # Absolute value of signal intensity
+                "RSSI_level_unit" / Computed("dBm"),
+            ),
+            "XIAOMI_DATA_ID_VacuumCleaner": Struct(
+                "type_length" / Const(b"\x02"),
+                "mode" / Enum(Int8ul,
+                    XIAOMI_charging    =0x00,
+                    XIAOMI_standby     =0x01,
+                    XIAOMI_standard    =0x02,
+                    XIAOMI_strong      =0x03,
+                    XIAOMI_error       =0xff,
+                ),
+                "gear" / Int8ul,  # Current standard gear
+            ),
+            "XIAOMI_DATA_ID_BPBracelet": Struct(
+                "type_length" / Const(b"\x04"),
+                "steps" / Int16ul,  # Number of steps of the day
+                "heart_rate" / Int8ul,  # Last heart rate
+                "status" / Int8ul,  # Current activity status
             ),
             "UNBOUND_DEVICE": Const(b"\x00"),
         }
@@ -739,13 +893,13 @@ comfort_values = Struct(
 
 trigger = Struct(
     "version" / Computed(1),
-	"temp_threshold" / Int16sl_x100,  # x0.01°, Set temp threshold
-	"humi_threshold" / Int16ul_x100,  # x0.01%, Set humi threshold
-	"temp_hysteresis" / Int16sl_x100,  # Set temp hysteresis, -327.67..327.67 °
-	"humi_hysteresis" / Int16ul_x100,  # Set humi hysteresis, -327.67..327.67 %
+    "temp_threshold" / Int16sl_x100,  # x0.01°, Set temp threshold
+    "humi_threshold" / Int16ul_x100,  # x0.01%, Set humi threshold
+    "temp_hysteresis" / Int16sl_x100,  # Set temp hysteresis, -327.67..327.67 °
+    "humi_hysteresis" / Int16ul_x100,  # Set humi hysteresis, -327.67..327.67 %
     "temperature_unit" / Computed("°C"),
     "humidity_unit" / Computed("%"),
-	"rds_time_report" / Int16ul,  # Reed switch count report interval (sec)
+    "rds_time_report" / Int16ul,  # Reed switch count report interval (sec)
     "rds_time_unit" / Computed("sec."),
     "rds" / BitStruct(  # flags Reed switch
         Padding(3),

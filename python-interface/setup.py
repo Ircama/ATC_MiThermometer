@@ -120,7 +120,7 @@ setup(
     extras_require={
         'gui': [
             "wxPython",
-            "construct-gallery>=1.1.0",
+            "construct-gallery>=1.2.0",
             "construct-editor"
         ]
     },
