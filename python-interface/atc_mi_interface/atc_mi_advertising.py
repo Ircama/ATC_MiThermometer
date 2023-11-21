@@ -31,7 +31,8 @@ class AtcMiConstructFrame(wx.Frame):
             *args,
             maximized=False,
             loadfile=None,
-            ble_start=False,
+            auto_ble_start=False,
+            bleak_scanner_kwargs={},
             **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -43,12 +44,13 @@ class AtcMiConstructFrame(wx.Frame):
         self.status_bar: wx.StatusBar = self.CreateStatusBar()
         self.main_panel = AtcMiBleakScannerConstruct(
             self,
+            bleak_scanner_kwargs=bleak_scanner_kwargs,
             filter_hint_mac="A4:C1:38",
             filter_hint_name="LYWSD03MMC, ATC",
             key_label="Bindkey",
             description_label="Description",
             loadfile=loadfile,
-            ble_start=ble_start,
+            auto_ble_start=auto_ble_start,
             gallery_descriptor=construct_module,
             col_name_width=200,
             col_type_width=150)
@@ -62,9 +64,9 @@ class AtcMiConstructFrame(wx.Frame):
 
 
 class AtcMiBleakScannerConstruct(BleakScannerConstruct):
-    def __init__(self, *args, ble_start=False, **kwargs):
+    def __init__(self, *args, auto_ble_start=False, **kwargs):
         super().__init__(*args, **kwargs)
-        if ble_start:
+        if auto_ble_start:
             self.ble_start()
 
     def bleak_advertising(self, device, advertisement_data):
@@ -94,7 +96,7 @@ def main():
     parser.add_argument(
         '-s',
         "--start",
-        dest='ble_start',
+        dest='auto_ble_start',
         action='store_true',
         help="start BLE")
     parser.add_argument(
@@ -146,7 +148,7 @@ def main():
         None,
         maximized=args.maximized,
         loadfile=loadfile,
-        ble_start=args.ble_start
+        auto_ble_start=args.auto_ble_start
     )
 
     if args.disable:
