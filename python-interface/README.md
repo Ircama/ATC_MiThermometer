@@ -749,15 +749,16 @@ With a proper Python installation, the entry-point `atc_mi_advertising` should a
 Program command line options:
 
 ```
-usage: atc_mi_advertising [-h] [-s] [-m] [-l LOG_DATA_FILE [LOG_DATA_FILE ...]] [-i] [-d] [-V]
+usage: atc_mi_advertising [-h] [-s] [-m] [-l LOG_DATA_FILE [LOG_DATA_FILE ...]] [-i] [-n] [-d] [-V]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -s, --start           start BLE
   -m, --maximized       display the frame maximized
   -l LOG_DATA_FILE [LOG_DATA_FILE ...], --load LOG_DATA_FILE [LOG_DATA_FILE ...]
                         log data file(s) to be automatically loaded at startup.
   -i, --inspectable     enable Inspection (Ctrl-Alt-I)
+  -n, --name            Add local name and RSSI to each label
   -d, --disable         Disable decryption errors, showing them in the status bar
   -V, --version         Print version and exit
 
@@ -777,6 +778,7 @@ Main functionalities.
 - BLE client to log, browse, test and edit advertisements produced by the Xiaomi Mijia Thermometers.
 - Cross-platform GUI.
 - The GUI includes a BLE control (implemented with buttons) which allows starting and stopping the BLE advertisement receiver. Advertisements are logged in their reception sequence, automatically labbelled basing on the discovered format and including related MAC address, so that they can be immediately selected by the user to browse and parse data.
+. Optionally, the log can include the local name and RSSI of each advertisement.
 - A filter button can be used to enter a specific MAC address to restrict logging, a portion of it or a sequence of addresses, as well as BLE local names.
 - Logged data can be saved to file in [pickle format](https://docs.python.org/3/library/pickle.html). Archives can be subsequently reloaded and appended to the current log. They can also be inspected with `python -mpickle archive-file-name.pickle`.
 - Advertisement data are logged in the left panel, shown as hex bytes in the central panel and then parsed to browsable *construct* structures in the right panel.

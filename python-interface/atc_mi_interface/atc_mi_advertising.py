@@ -33,6 +33,7 @@ class AtcMiConstructFrame(wx.Frame):
             loadfile=None,
             auto_ble_start=False,
             bleak_scanner_kwargs={},
+            add_local_name_rssi=False,
             **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -51,6 +52,7 @@ class AtcMiConstructFrame(wx.Frame):
             description_label="Description",
             loadfile=loadfile,
             auto_ble_start=auto_ble_start,
+            add_local_name_rssi=add_local_name_rssi,
             gallery_descriptor=construct_module,
             col_name_width=200,
             col_type_width=150)
@@ -64,8 +66,15 @@ class AtcMiConstructFrame(wx.Frame):
 
 
 class AtcMiBleakScannerConstruct(BleakScannerConstruct):
-    def __init__(self, *args, auto_ble_start=False, **kwargs):
+    def __init__(
+            self,
+            *args,
+            auto_ble_start=False,
+            add_local_name_rssi=False,
+            **kwargs
+        ):
         super().__init__(*args, **kwargs)
+        self.add_local_name_rssi = add_local_name_rssi
         if auto_ble_start:
             self.ble_start()
 
@@ -78,6 +87,12 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
                 advertisement_data.rssi)
             return
         if adv_data:
+            if self.add_local_name_rssi:
+                format_label = (
+                    f"{advertisement_data.local_name} | "
+                    f"{format_label} | "
+                    f"{advertisement_data.rssi}"
+                )
             self.add_data(
                 data=adv_data,
                 reference=device.address,
@@ -121,6 +136,12 @@ def main():
         action='store_true',
         help="enable Inspection (Ctrl-Alt-I)")
     parser.add_argument(
+        '-n',
+        "--name",
+        dest='add_local_name_rssi',
+        action='store_true',
+        help="Add local name and RSSI to each label")
+    parser.add_argument(
         '-d',
         "--disable",
         dest='disable',
@@ -148,7 +169,8 @@ def main():
         None,
         maximized=args.maximized,
         loadfile=loadfile,
-        auto_ble_start=args.auto_ble_start
+        auto_ble_start=args.auto_ble_start,
+        add_local_name_rssi=args.add_local_name_rssi
     )
 
     if args.disable:
