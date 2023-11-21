@@ -92,7 +92,7 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
                 format_label = (
                     f"{separator} {advertisement_data.local_name} {separator} "
                     f"{format_label} {separator} "
-                    f"{advertisement_data.rssi}"
+                    f"{advertisement_data.rssi}" + u"\u2002"  # large space
                 )
             self.add_data(
                 data=adv_data,
