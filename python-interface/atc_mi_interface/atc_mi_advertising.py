@@ -86,18 +86,23 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
                 device.address, format_label, advertisement_data,
                 advertisement_data.rssi)
             return
+        separator = "-"
+        date_separator = " "
         if adv_data:
             if self.add_local_name_rssi:
-                separator = u"\u250a"  # thin vertical dotted bar
+                separator = u" \u250a "  # thin vertical dotted bar
+                date_separator = ""
                 format_label = (
-                    f"{separator} {advertisement_data.local_name} {separator} "
-                    f"{format_label} {separator} "
-                    f"{advertisement_data.rssi}" + u"\u2002"  # large space
+                    f"{separator}{advertisement_data.local_name}{separator}"
+                    f"{format_label}{separator}"
+                    f"{advertisement_data.rssi}"
                 )
             self.add_data(
                 data=adv_data,
                 reference=device.address,
-                append_label=format_label
+                append_label=format_label,
+                date_separator=date_separator,
+                duplicate_separator=separator
             )
         logging.info(
             "mac: %s. %s advertisement: %s. RSSI: %s",
