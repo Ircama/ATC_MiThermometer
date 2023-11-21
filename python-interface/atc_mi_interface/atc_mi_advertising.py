@@ -33,7 +33,7 @@ class AtcMiConstructFrame(wx.Frame):
             loadfile=None,
             auto_ble_start=False,
             bleak_scanner_kwargs={},
-            add_local_name_rssi=False,
+            not_local_name_rssi=False,
             **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -52,7 +52,7 @@ class AtcMiConstructFrame(wx.Frame):
             description_label="Description",
             loadfile=loadfile,
             auto_ble_start=auto_ble_start,
-            add_local_name_rssi=add_local_name_rssi,
+            not_local_name_rssi=not_local_name_rssi,
             gallery_descriptor=construct_module,
             col_name_width=200,
             col_type_width=150)
@@ -70,11 +70,11 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
             self,
             *args,
             auto_ble_start=False,
-            add_local_name_rssi=False,
+            not_local_name_rssi=False,
             **kwargs
         ):
         super().__init__(*args, **kwargs)
-        self.add_local_name_rssi = add_local_name_rssi
+        self.not_local_name_rssi = not_local_name_rssi
         if auto_ble_start:
             self.ble_start()
 
@@ -89,7 +89,7 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
         separator = "-"
         date_separator = " "
         if adv_data:
-            if self.add_local_name_rssi:
+            if not self.not_local_name_rssi:
                 separator = u" \u250a "  # thin vertical dotted bar
                 date_separator = ""
                 format_label = (
@@ -144,9 +144,9 @@ def main():
     parser.add_argument(
         '-n',
         "--name",
-        dest='add_local_name_rssi',
+        dest='not_local_name_rssi',
         action='store_true',
-        help="Add local name and RSSI to each label")
+        help="Do not show the local name and RSSI in each label")
     parser.add_argument(
         '-d',
         "--disable",
@@ -176,7 +176,7 @@ def main():
         maximized=args.maximized,
         loadfile=loadfile,
         auto_ble_start=args.auto_ble_start,
-        add_local_name_rssi=args.add_local_name_rssi
+        not_local_name_rssi=args.not_local_name_rssi
     )
 
     if args.disable:
