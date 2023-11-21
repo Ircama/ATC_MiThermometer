@@ -395,7 +395,7 @@ def gui_edit(editing_structure: dict, args: argparse.Namespace):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
 
-            self.SetTitle("Configuration Editor")
+            self.SetTitle("Xiaomi Mijia Thermometer - Configuration Editor")
             self.SetSize(1000, 600)
             self.Center()
 

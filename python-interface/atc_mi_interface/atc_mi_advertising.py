@@ -37,7 +37,7 @@ class AtcMiConstructFrame(wx.Frame):
             **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.SetTitle("Xiaomi Mijia Thermometer - BLE Advertisement Browser")
+        self.SetTitle("BLE Advertisement Browser for Home Sensors")
         self.SetSize(1000, 600)
         self.SetIcon(self.icon_image.GetIcon())
         self.Center()
