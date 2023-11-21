@@ -88,9 +88,10 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
             return
         if adv_data:
             if self.add_local_name_rssi:
+                separator = u"\u250a"  # thin vertical dotted bar
                 format_label = (
-                    f"{advertisement_data.local_name} | "
-                    f"{format_label} | "
+                    f"{separator} {advertisement_data.local_name} {separator} "
+                    f"{format_label} {separator} "
                     f"{advertisement_data.rssi}"
                 )
             self.add_data(
