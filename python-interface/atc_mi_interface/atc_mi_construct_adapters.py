@@ -35,14 +35,14 @@ class BtHomeCodec(Tunnel):
             mac = ctx._params.mac_address or self.def_mac
         except Exception:
             mac = self.def_mac
-        if not mac:
-            raise ValueError('Missing MAC address. Cannot ' + msg)
-        return mac
+        if not mac.strip():
+            return handle_decrypt_error('Missing MAC address. Cannot convert.')
+        return mac.strip()
 
     def decrypt(self, ctx, nonce, encrypted_data, mic, update):
         bindkey = self.bindkey(ctx)
         if not bindkey:
-            raise ValueError('Missing bindkey, cannot decrypt.')
+            return handle_decrypt_error('Missing bindkey, cannot decrypt.')
         cipher = AES.new(bindkey, AES.MODE_CCM, nonce=nonce, mac_len=4)
         if update is not None:
             cipher.update(update)
@@ -54,7 +54,7 @@ class BtHomeCodec(Tunnel):
     def encrypt(self, ctx, nonce, msg, update):
         bindkey = self.bindkey(ctx)
         if not bindkey:
-            raise ValueError('Missing bindkey, cannot encrypt.')
+            return handle_decrypt_error('Missing bindkey, cannot encrypt.')
         cipher = AES.new(bindkey, AES.MODE_CCM, nonce=nonce, mac_len=4)
         if update is not None:
             cipher.update(update)

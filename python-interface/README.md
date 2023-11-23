@@ -751,15 +751,16 @@ Program command line options:
 ```
 usage: atc_mi_advertising [-h] [-s] [-m] [-l LOG_DATA_FILE [LOG_DATA_FILE ...]] [-i] [-n] [-d] [-V]
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
   -s, --start           start BLE
   -m, --maximized       display the frame maximized
   -l LOG_DATA_FILE [LOG_DATA_FILE ...], --load LOG_DATA_FILE [LOG_DATA_FILE ...]
-                        log data file(s) to be automatically loaded at startup.
+                        log data file(s) to be automatically loaded at startup
   -i, --inspectable     enable Inspection (Ctrl-Alt-I)
   -n, --name            Do not show the local name and RSSI in each label
-  -d, --disable         Disable decryption errors, showing them in the status bar
+  -d, --disable         Disable decryption errors, showing them in the status bar, so that the
+                        unencrypted part of the frame is decoded
   -V, --version         Print version and exit
 
 Xiaomi Mijia Thermometer - BLE Advertisement Browser

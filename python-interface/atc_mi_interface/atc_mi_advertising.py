@@ -78,6 +78,8 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
         if auto_ble_start:
             self.ble_start()
 
+        self.sep = u" \u250a "  # thin vertical dotted bar
+
     def bleak_advertising(self, device, advertisement_data):
         format_label, adv_data = atc_mi_advertising_format(advertisement_data)
         if "Unknown" in format_label:
@@ -86,23 +88,19 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
                 device.address, format_label, advertisement_data,
                 advertisement_data.rssi)
             return
-        separator = "-"
-        date_separator = " "
         if adv_data:
             if not self.not_local_name_rssi:
-                separator = u" \u250a "  # thin vertical dotted bar
-                date_separator = ""
                 format_label = (
-                    f"{separator}{advertisement_data.local_name}{separator}"
-                    f"{format_label}{separator}"
+                    f"{advertisement_data.local_name}{self.sep}"
+                    f"{format_label}{self.sep}"
                     f"{advertisement_data.rssi}"
                 )
             self.add_data(
                 data=adv_data,
                 reference=device.address,
                 append_label=format_label,
-                date_separator=date_separator,
-                duplicate_separator=separator
+                date_separator=self.sep,
+                duplicate_separator=self.sep
             )
         logging.info(
             "mac: %s. %s advertisement: %s. RSSI: %s",
@@ -131,7 +129,7 @@ def main():
         "--load",
         dest='log_data_file',
         type=argparse.FileType('rb'),
-        help="log data file(s) to be automatically loaded at startup.",
+        help="log data file(s) to be automatically loaded at startup",
         default=0,
         nargs='+',
         metavar='LOG_DATA_FILE')
@@ -150,9 +148,11 @@ def main():
     parser.add_argument(
         '-d',
         "--disable",
-        dest='disable',
+        dest='disable_encr_err',
         action='store_true',
-        help="Disable decryption errors, showing them in the status bar")
+        help="Disable decryption errors, showing them in the status bar, "
+             "so that the unencrypted part of the frame is decoded"
+     )
     parser.add_argument(
         '-V',
         "--version",
@@ -179,10 +179,10 @@ def main():
         not_local_name_rssi=args.not_local_name_rssi
     )
 
-    if args.disable:
+    if args.disable_encr_err:
         # Monkey patch handle_decrypt_error to show errors on the status line
         def handle_decrypt_error(descr):
-            frame.SetStatusText("ERROR: " + descr)
+            frame.SetStatusText(u"\u259f\u259c" * 20 + u"\u2596 " + descr)
             return b""
         construct_module.atc_mi_construct_adapters.handle_decrypt_error = (
             handle_decrypt_error
