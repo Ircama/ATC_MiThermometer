@@ -193,4 +193,9 @@ def main():
 
 
 if __name__ == "__main__":
+    from importlib.metadata import version
+    maj, min, patch = map(int, version("construct-gallery").split("."))
+    if maj < 2 and min < 4:
+        print("Please update the construct-gallery module.")
+        quit()
     main()
