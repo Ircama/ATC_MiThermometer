@@ -365,26 +365,29 @@ mi_like_format = Struct(
         "registered" / Flag,  # 0: The device is not bound; 1: The device is registered and bound. This item is used to indicate whether the device is reset
     ),
     "device_id" / Enum(Int16ul,  # Device type (https://github.com/pvvx/ATC_MiThermometer/blob/master/src/mi_beacon.h#L14-L35)
-        XIAOMI_DEV_ID_LYWSDCGQ       = 0x01AA,
-        XIAOMI_DEV_ID_CGG1           = 0x0347,
-        XIAOMI_DEV_ID_CGG1_ENCRYPTED = 0x0B48,
-        XIAOMI_DEV_ID_CGDK2          = 0x066F,
-        XIAOMI_DEV_ID_LYWSD02        = 0x045B,
-        XIAOMI_DEV_ID_LYWSD03MMC     = 0x055B,
-        XIAOMI_DEV_ID_CGD1           = 0x0576,
-        XIAOMI_DEV_ID_MHO_C303       = 0x06d3,
-        XIAOMI_DEV_ID_MHO_C401       = 0x0387,
-        XIAOMI_DEV_ID_JQJCY01YM      = 0x02DF,
-        XIAOMI_DEV_ID_HHCCJCY01      = 0x0098,
-        XIAOMI_DEV_ID_GCLS002        = 0x03BC,
-        XIAOMI_DEV_ID_HHCCPOT002     = 0x015D,
-        XIAOMI_DEV_ID_WX08ZM         = 0x040A,
-        XIAOMI_DEV_ID_MCCGQ02HL      = 0x098B,
-        XIAOMI_DEV_ID_YM_K1501       = 0x0083,
-        XIAOMI_DEV_ID_YM_K1501EU     = 0x0113,
-        XIAOMI_DEV_ID_V_SK152        = 0x045C,
-        XIAOMI_DEV_ID_SJWS01LM       = 0x0863,
-        XIAOMI_DEV_ID_MJYD02YL       = 0x07F6
+        XIAOMI_DEV_ID_LYWSDCGQ       = 0x01AA,  # Xiaomi Mijia Bluetooth Thermometer
+        XIAOMI_DEV_ID_CGG1           = 0x0347,  # Xiaomi ClearGrass Bluetooth Hygrothermograph
+        XIAOMI_DEV_ID_CGG1_ENCRYPTED = 0x0B48,  # Qingping Temp & RH Monitor
+        XIAOMI_DEV_ID_CGDK2          = 0x066F,  # Xiaomi Qingping Temp & RH Monitor Lite
+        XIAOMI_DEV_ID_LYWSD02        = 0x045B,  # Xiaomi Mijia Digital Clock
+        XIAOMI_DEV_ID_LYWSD03MMC     = 0x055B,  # Xiaomi Mijia Temperature And Humidity Monitor
+        XIAOMI_DEV_ID_CGD1           = 0x0576,  # Xiaomi Qingping Bluetooth Alarm Clock
+        XIAOMI_DEV_ID_MHO_C303       = 0x06d3,  # MiaoMiaoce Smart Clock Temperature and Humidity Sensor
+        XIAOMI_DEV_ID_MHO_C401       = 0x0387,  # Xiaomi E-Ink Smart Thermometer Hygrometer
+        XIAOMI_DEV_ID_JQJCY01YM      = 0x02DF,  # Xiaomi Formaldehyde Monitor
+        XIAOMI_DEV_ID_HHCCJCY01      = 0x0098,  # Xiaomi Mijia Flower Care (Conductivity, Illuminance, Moisture, Temperature)
+        XIAOMI_DEV_ID_GCLS002        = 0x03BC,  # Xiaomi Mijia Flower Care (soil moisture, temperature, light, nutrient detection)
+        XIAOMI_DEV_ID_HHCCPOT002     = 0x015D,  # Xiaomi Mijia Smart Flower Pot
+        XIAOMI_DEV_ID_WX08ZM         = 0x040A,  # Xiaomi Mijia Mosquito Repellent Device
+        XIAOMI_DEV_ID_MCCGQ02HL      = 0x098B,  # Xiaomi Mijia Door and Window Sensor 2
+        XIAOMI_DEV_ID_YM_K1501       = 0x0083,  # Xiaomi Viomi Mija Smart Kettle
+        XIAOMI_DEV_ID_YM_K1501EU     = 0x0113,  # Xiaomi Viomi Mija Smart Kettle
+        XIAOMI_DEV_ID_V_SK152        = 0x045C,  # Xiaomi Viomi Mija Smart Kettle
+        XIAOMI_DEV_ID_SJWS01LM       = 0x0863,  # Xiaomi Mijia Flood Detector
+        XIAOMI_DEV_ID_MJYD02YL       = 0x07F6,  # Xiaomi Mijia Motion Activated Night Light 2
+        XIAOMI_DEV_ID_RTCGQ02LM      = 0x0A8D,  # Xiaomi Mi Smart Home Occupancy Sensor 2
+        XIAOMI_DEV_ID_XMMFO1JQD      = 0x04E1,  # Xiaomi Mijia bluetooth Smart Rubik's Cube
+        XIAOMI_DEV_ID_YLAI003        = 0x07BF   # Yeelight Remote Control 1S Wireless Switch
     ),
     "counter" / Int8ul,  # 0..0xff..0 frame/measurement count
     "MAC" / ReversedMacAddress,  # [0] - lo, .. [6] - hi digits
