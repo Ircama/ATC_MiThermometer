@@ -729,15 +729,16 @@ bt_home_v2_data = Struct(
         BtHomeID_weight = 0x06,           # 0x06, uint16, 0.01 kg
         BtHomeID_weight_lb = 0x07,        # 0x07, uint16, 0.01 lb
         BtHomeID_dewpoint = 0x08,         # 0x08, sint16, 0.01 °C
-        BtHomeID_count8 = 0x09,           # 0x09, uint8
+        BtHomeID_count8 = 0x09,           # 0x09, uint8, factor=1
         BtHomeID_energy24 = 0x0a,         # 0x0A, uint24, 0.001 kWh
         BtHomeID_power24 = 0x0b,          # 0x0B, uint24, 0.01 W
         BtHomeID_voltage = 0x0c,          # 0x0C, uint16, 0.001 V
-        BtHomeID_pm2x5 = 0x0d,            # 0x0D, uint16, kg/m3, factor=1
-        BtHomeID_pm10 = 0x0e,             # 0x0E, uint16, kg/m3, factor=1
+        BtHomeID_pm2x5 = 0x0d,            # 0x0D, uint16, ug/m3, factor=1
+        BtHomeID_pm10 = 0x0e,             # 0x0E, uint16, ug/m3, factor=1
         BtHomeID_co2 = 0x12,              # 0x12, uint16, ppm, factor=1
         BtHomeID_tvoc = 0x13,             # 0x13, uint16, ug/m3, factor=1
-        BtHomeID_moisture16 = 0x14,       # 0x14, uint16, 0.01
+        BtHomeID_moisture16 = 0x14,       # 0x14, uint16, 0.01 %
+        # boolean set
         BtHomeID_boolean = 0x0f,          # 0x0F, uint8, generic boolean
         BtHomeID_switch = 0x10,           # 0x10, uint8, power on/off
         BtHomeID_opened = 0x11,           # 0x11, uint8, opening =0 Closed, = 1 Open
@@ -766,8 +767,9 @@ bt_home_v2_data = Struct(
         BtHomeID_tamper = 0x2b,           # 0x2b, uint8, =0 Off, =1 On
         BtHomeID_vibration = 0x2c,        # 0x2c, uint8, =0 Clear, =1 Detected
         BtHomeID_window = 0x2d,           # 0x2d, uint8, =0 Closed, =1 Open
-        BtHomeID_humidity8 = 0x2e,        # 0x2e, uint8
-        BtHomeID_moisture8 = 0x2f,        # 0x2f, uint8
+        # others
+        BtHomeID_humidity8 = 0x2e,        # 0x2e, uint8, %, factor=1
+        BtHomeID_moisture8 = 0x2f,        # 0x2f, uint8, %, factor=1
         BtHomeID_0x30 = 0x30,             # 0x30, uint8
         BtHomeID_0x31 = 0x31,             # 0x31, uint8
         BtHomeID_0x32 = 0x32,             # 0x32, uint8
@@ -800,9 +802,9 @@ bt_home_v2_data = Struct(
         BtHomeID_energy32 = 0x4d,         # 0x4d, uint32, 0.001
         BtHomeID_volume32 = 0x4e,         # 0x4e, uint32, 0.001
         BtHomeID_water32 = 0x4f,          # 0x4f, uint32, 0.001
-        BtHomeID_timestamp = 0x50,        # 0x50, uint48
-        BtHomeID_acceleration = 0x51,     # 0x51, uint16, 0.001
-        BtHomeID_gyroscope = 0x52,        # 0x52, uint16, 0.001
+        BtHomeID_timestamp = 0x50,        # 0x50, uint48 (4 bytes)
+        BtHomeID_acceleration = 0x51,     # 0x51, uint16, 0.001 m/s²
+        BtHomeID_gyroscope = 0x52,        # 0x52, uint16, 0.001 °/s
         BtHomeID_text = 0x53,             # 0x53, size uint8, uint8[]
         BtHomeID_raw = 0x54               # 0x54, size uint8, uint8[]
     ),
