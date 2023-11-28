@@ -170,6 +170,8 @@ Int16ul_x1000 = ExprAdapter(Int16ul,
         obj_ / 1000, lambda obj, ctx: int(float(obj) * 1000))
 Int24ul_x1000 = ExprAdapter(Int24ul,
         obj_ / 1000, lambda obj, ctx: int(float(obj) * 1000))
+Int32ul_x1000 = ExprAdapter(Int32ul,
+        obj_ / 1000, lambda obj, ctx: int(float(obj) * 1000))
 Int16ul_x100 = ExprAdapter(
     Int16ul, obj_ / 100, lambda obj, ctx: int(float(obj) * 100))
 Int24ul_x100 = ExprAdapter(
@@ -184,6 +186,8 @@ Int16sb_x10 = ExprAdapter(
     Int16sb, obj_ / 10, lambda obj, ctx: int(float(obj) * 10))
 Int16sl_x10 = ExprAdapter(
     Int16sl, obj_ / 10, lambda obj, ctx: int(float(obj) * 10))
+Int8ul_x10 = ExprAdapter(
+    Int8ul, obj_ / 10, lambda obj, ctx: int(float(obj) * 10))
 
 
 def normalize_report(report):

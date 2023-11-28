@@ -58,6 +58,12 @@ firmware configuration parameters.
 A documented interface and a testing tool are included to receive, decode,
 show, build and edit the BLE advertisements.
 
+The included "BLE Advertisement Browser for Home Sensors" (atc_mi_advertising)
+is a ready-to-use, cross-platform GUI app which allows to browse and decode an
+extensive number of already configured devices, including Xiaomi Mijia
+and [BTHome](https://bthome.io/) formats. This app also offers tools to easily
+integrate additional protocols and sensors.
+
 Installation without GUI:
 
 ```
