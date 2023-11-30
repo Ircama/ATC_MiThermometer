@@ -467,6 +467,11 @@ bt_home_data = Struct(
         BT_HOME_tamper = 0x022b,           # 0x2b, uint8, =0 Off, =1 On
         BT_HOME_vibration = 0x022c,        # 0x2c, uint8, =0 Clear, =1 Detected
         BT_HOME_window = 0x022d,           # 0x2d, uint8, =0 Closed, =1 Open
+        **{  # texts are in the form BT_HOME_raw_nn and BT_HOME_text_nn, where nn is the two-digit length of the text, 0..30 bytes.
+            f"{t}{i:02d}": ((i + 1) << 8) + n
+            for t, n in [("BT_HOME_raw_", 0x54), ("BT_HOME_text_", 0x53)]
+            for i in range(31)
+        }
     ),
     "data" / Switch(this.bt_home_type,
         {
@@ -685,6 +690,10 @@ bt_home_data = Struct(
                 Padding(7),
                 "window_open" / Flag,
             ),
+        } | {
+            f"{t}{i:02d}": PaddedString(i, "utf8")
+            for t in ["BT_HOME_raw_", "BT_HOME_text_"]
+            for i in range(31)
         }
     )
 )

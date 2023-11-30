@@ -34,8 +34,9 @@ from setuptools import setup
 import re
 
 DESCRIPTION = (
-    'Python tools and API for the "atc1441" and "pvvx" Xiaomi Mijia'
-    ' Thermometer custom firmware (ATC_MiThermometer)'
+    'Python tools and API to process BLE advertisements of BLE devices'
+    'and sensors, also including the "atc1441" and "pvvx" Xiaomi Mijia'
+    ' Thermometer custom firmware'
 )
 
 PACKAGE_NAME = "atc-mi-interface"
@@ -45,32 +46,38 @@ VERSIONFILE = "atc_mi_interface/__version__.py"
 LONG_DESCRIPTION = '''
 # atc-mi-interface
 
-__Python tools and API for the "atc1441" and "pvvx" Xiaomi Mijia Thermometer custom firmware__
+__Tools and API to process BLE advertisements of BLE devices and sensors__
 
-Python components (API and command-line tools, including some GUI) to represent
-the data model of the BLE advertisements of the Xiaomi Mijia Thermometer custom
+Python API to represent
+the data model of the BLE advertisements of the following sensors:
+
+- Xiaomi Mijia devices
+- BT Home DIY sensors implementing BTHome v1 and v2 protocols
+- Xiaomi Mijia Thermometer with custom
 firmware (ATC_MiThermometer) developed by
 [atc1441](https://github.com/atc1441/ATC_MiThermometer)
-and [pvvx](https://github.com/pvvx/ATC_MiThermometer). When using the latest
-releases of the "pvvx" firmware, it also allows to read and write the
-firmware configuration parameters.
+and [pvvx](https://github.com/pvvx/ATC_MiThermometer).
 
-A documented interface and a testing tool are included to receive, decode,
-show, build and edit the BLE advertisements.
+The included "BLE Advertisement Browser for Home Sensors" GUI app
+(atc_mi_advertising)
+is a ready-to-use, cross-platform tool which allows to receive, decode,
+browse, edit and build BLE advertisements for all supported protocols.
+This app also offers tools to easily integrate new BLE devices.
 
-The included "BLE Advertisement Browser for Home Sensors" (atc_mi_advertising)
-is a ready-to-use, cross-platform GUI app which allows to browse and decode an
-extensive number of already configured devices, including Xiaomi Mijia
-and [BTHome](https://bthome.io/) formats. This app also offers tools to easily
-integrate additional protocols and sensors.
+The atc_mi_format_test GUI app app is a test suite of BLE advertising
+samples.
 
-Installation without GUI:
+An additional tool can be used with the latest
+releases of the "pvvx" firmware to read and write the
+internal configuration parameters.
+
+Installation of the API without GUI:
 
 ```
 pip install [ -i https://test.pypi.org/simple/ ] atc-mi-interface
 ```
 
-Installation including wxPython prerequisites for the GUI:
+Installation of GUI apps and API:
 
 ```
 pip install [ -i https://test.pypi.org/simple/ ] atc-mi-interface[gui]
