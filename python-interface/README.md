@@ -7,20 +7,29 @@
 
 These programs and descriptions are provided by [Ircama](https://github.com/Ircama).
 
-This section describes the Python components (API and command-line tools, including some GUI) to represent the data model of the BLE advertisements produced by the custom firmware, as well as a documented interface and a testing tool to receive, decode, show and edit the BLE advertisements delivered via the custom firmware. Additional features allow browsing and editing the full configuration of the device.
+The current section describes a Python data model, Python API and tools to receive, decode, show and edit the BLE advertisements produced by the following sensors:
 
-The base components used here are:
+- Xiaomi Mijia BLE devices
+- BT Home DIY sensors implementing BTHome v1 and v2 protocols
+- Xiaomi Mijia Thermometer with custom firmware (ATC_MiThermometer) developed by [atc1441](https://github.com/atc1441/ATC_MiThermometer) and [pvvx](https://github.com/pvvx/ATC_MiThermometer).
+
+The following apps are included:
+
+- a configuration tool which can be used with the latest releases of the "pvvx" firmware to browse and update the internal configuration parameters; it can be run either via command-line interface or through its GUI, and it also provides an API;
+- the "BLE Advertisement Browser for Home Sensors" app (atc_mi_advertising), consisting of a ready-to-use, cross-platform GUI allowing to receive, decode,
+browse, edit and build BLE advertisements for all supported protocols; this app can also be used to easily integrate new BLE devices;
+- the atc_mi_format_test GUI app, collecting test suites of BLE advertising samples.
+
+All apps are based on [wxPython](https://www.wxpython.org/). The base components used here are:
 
 - [bleak](https://bleak.readthedocs.io/en/latest/), a cross-platform BLE library;
-- [construct](https://construct.readthedocs.io/en/latest/intro.html), a symmetric Python library allowing to declaratively define a data structure that describes the advertisement frames produced by the custom firmware, as well as the related configuration frames;
-- [construct-gallery](https://github.com/Ircama/construct-gallery), a set of tools extending [construct-editor](https://github.com/timrid/construct-editor/), which provides a GUI (based on [wxPython](https://www.wxpython.org/)) for *construct*. All these tools are used here, including plugins and [bleak_scanner_construct.py](atc_mi_interface/bleak_scanner_construct.py), a library to browse BLE advertisements.
+- [construct](https://construct.readthedocs.io/en/latest/intro.html), a symmetric Python library allowing to declaratively define a data structure that describes the advertisement frames produced by supported devices, as well as the related configuration frames;
+- [construct-gallery](https://github.com/Ircama/construct-gallery), a set of tools extending [construct-editor](https://github.com/timrid/construct-editor/), which provides a GUI for *construct*, based on the [wxPython](https://www.wxpython.org/) cross-platform desktop GUI toolkit and including [bleak_scanner_construct.py](atc_mi_interface/bleak_scanner_construct.py), a library to browse BLE advertisements, with plugins.
 
-The software in this section includes:
+The core API consists of:
 
-- a [*construct* data model](atc_mi_interface/atc_mi_construct.py) representing the *custom*, *atc1441*, *mi_like*, *bt_home* (version 1) and *bt_home_v2* (version 2) formats, respectively in clear and encrypted structures, with a documented interface to decode, browse and build the structures of BLE advertisements;
-- the [`atc_mi_advertising_format(advertisement_data)`](atc_mi_interface/atc_mi_adv_format.py) function, to easily process BLE advertisements;
-- an easy to use [BLE Advertisement Browser GUI](atc_mi_interface/atc_mi_advertising.py) based on the [wxPython](https://www.wxpython.org/) cross-platform desktop GUI toolkit, including controls on the BLE advertisements, map of MAC addresses, bindkeys, etc;
-- a [configuration tool](atc_mi_interface/atc_mi_config.py) allowing to browse and edit the configuration parameters of the latest releases of the "pvvx" firmware, with a command-line interface and optionally with a GUI, including the possibility to use this configuration feature as an API.
+- a [*construct* data model](atc_mi_interface/atc_mi_construct.py) representing the *custom*, *atc1441*, *mi_like*, *bt_home* (version 1) and *bt_home_v2* (version 2) formats, respectively in clear and encrypted structures, with a documented interface to decode, browse and build the structures of BLE advertisements; it also includes the data model of the "pvvx" custom firmware configuration;
+- the [`atc_mi_advertising_format(advertisement_data)`](atc_mi_interface/atc_mi_adv_format.py) function, to easily process BLE advertisements.
 
 ## Installation
 

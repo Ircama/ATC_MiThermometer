@@ -48,8 +48,8 @@ LONG_DESCRIPTION = '''
 
 __Tools and API to process BLE advertisements of BLE devices and sensors__
 
-Python API to represent
-the data model of the BLE advertisements of the following sensors:
+Python data model, Python API and tools to receive, decode, show and edit
+the BLE advertisements produced by the following sensors:
 
 - Xiaomi Mijia devices
 - BT Home DIY sensors implementing BTHome v1 and v2 protocols
@@ -58,18 +58,18 @@ firmware (ATC_MiThermometer) developed by
 [atc1441](https://github.com/atc1441/ATC_MiThermometer)
 and [pvvx](https://github.com/pvvx/ATC_MiThermometer).
 
-The included "BLE Advertisement Browser for Home Sensors" GUI app
-(atc_mi_advertising)
-is a ready-to-use, cross-platform tool which allows to receive, decode,
-browse, edit and build BLE advertisements for all supported protocols.
-This app also offers tools to easily integrate new BLE devices.
+The following apps are included:
 
-The atc_mi_format_test GUI app app is a test suite of BLE advertising
-samples.
-
-An additional tool can be used with the latest
-releases of the "pvvx" firmware to read and write the
-internal configuration parameters.
+- a configuration tool which can be used with the latest releases of the "pvvx"
+  firmware to browse and update the internal configuration parameters; it can
+  be run either via command-line interface or through its GUI, and it also
+  provides an API;
+- the "BLE Advertisement Browser for Home Sensors" app (atc_mi_advertising),
+  consisting of a ready-to-use, cross-platform GUI allowing to receive, decode,  
+  browse, edit and build BLE advertisements for all supported protocols; this
+  app can also be used to easily integrate new BLE devices;
+- the atc_mi_format_test GUI app, collecting test suites of BLE advertising
+  samples.
 
 Installation of the API without GUI:
 
