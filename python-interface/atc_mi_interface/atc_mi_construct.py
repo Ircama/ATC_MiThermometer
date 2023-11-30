@@ -406,7 +406,7 @@ mi_like_format = Struct(
 )
 
 # -------------- bt_home_format ------------------------------------------------
-# "BTHome" v1 advertising type, encrypted beacon unchecked. https://bthome.io/v1/
+# BTHome v1 advertising type. https://bthome.io/v1/
 
 bt_home_data = Struct(
     "bt_home_type" / Enum(Int16ub,
@@ -468,11 +468,12 @@ bt_home_data = Struct(
         BT_HOME_tamper = 0x022b,           # 0x2b, uint8, =0 Off, =1 On
         BT_HOME_vibration = 0x022c,        # 0x2c, uint8, =0 Clear, =1 Detected
         BT_HOME_window = 0x022d,           # 0x2d, uint8, =0 Closed, =1 Open
-        # Text formats are in the form BT_HOME_raw_nn and BT_HOME_text_nn,
-        # where nn is the two-digit decimal length of the text, 0..30 bytes.
+        # Text formats are in the form "BT_HOME_raw_nn" and "BT_HOME_text_nn",
+        # where nn is the two-digit decimal length of the text, 00..30 bytes.
+        # When building, a smaller string is padded with null bytes.
         **{
             f"{t}{i:02d}": ((i + 1) << 8) + n
-            for t, n in [("BT_HOME_raw_", 0x54), ("BT_HOME_text_", 0x53)]
+            for t, n in [("BT_HOME_text_", 0x53), ("BT_HOME_raw_", 0x54)]
             for i in range(31)
         }
     ),
@@ -695,12 +696,13 @@ bt_home_data = Struct(
             ),
         } | {
             f"{t}{i:02d}": PaddedString(i, "utf8")
-            for t in ["BT_HOME_raw_", "BT_HOME_text_"]
+            for t in ["BT_HOME_text_", "BT_HOME_raw_"]
             for i in range(31)
         }
     )
 )
 
+# BTHome v1, unencrypted advertising type. https://bthome.io/v1/
 # https://github.com/custom-components/ble_monitor/issues/548
 
 bt_home_format = Struct(  # V1 simplified formatting
@@ -712,7 +714,7 @@ bt_home_format = Struct(  # V1 simplified formatting
 )
 
 # -------------- bt_home_enc_format --------------------------------------------
-# "BTHome" v1 encrypted advertising type. https://bthome.io/v1/
+# BTHome v1, encrypted advertising type. https://bthome.io/v1/
 
 bt_home_enc_format = Struct(  # Simplified formatting
     "version" / Computed(1),
