@@ -439,6 +439,7 @@ bt_home_data = Struct(
         BT_HOME_timestamp       = 0x0550,  # 4 bytes
         BT_HOME_acceleration    = 0x0351,  # uint16, 0.001 m/s²
         BT_HOME_gyroscope       = 0x0352,  # uint16, 0.001 °/s
+        # boolean set
         BT_HOME_boolean = 0x020f,          # 0x0F, uint8, generic boolean
         BT_HOME_switch = 0x0210,           # 0x10, uint8, power on/off
         BT_HOME_opened = 0x0211,           # 0x11, uint8, opening =0 Closed, = 1 Open
@@ -467,7 +468,9 @@ bt_home_data = Struct(
         BT_HOME_tamper = 0x022b,           # 0x2b, uint8, =0 Off, =1 On
         BT_HOME_vibration = 0x022c,        # 0x2c, uint8, =0 Clear, =1 Detected
         BT_HOME_window = 0x022d,           # 0x2d, uint8, =0 Closed, =1 Open
-        **{  # texts are in the form BT_HOME_raw_nn and BT_HOME_text_nn, where nn is the two-digit length of the text, 0..30 bytes.
+        # Text formats are in the form BT_HOME_raw_nn and BT_HOME_text_nn,
+        # where nn is the two-digit decimal length of the text, 0..30 bytes.
+        **{
             f"{t}{i:02d}": ((i + 1) << 8) + n
             for t, n in [("BT_HOME_raw_", 0x54), ("BT_HOME_text_", 0x53)]
             for i in range(31)
