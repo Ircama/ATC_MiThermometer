@@ -708,13 +708,14 @@ construct_hex_editor.binary = construct().build(parsed_data(), **contextkw())
 
 ## Processing BLE advertisements
 
-After performing the [installation](#Installation) procedure, the simplest program to process BLE advertisements produced by the thermometers is the following:
+After performing the [installation](#Installation) procedure, the simplest program to process BLE advertisements produced by the BLE devices is the following:
 
 ```python
 import asyncio
 from bleak import BleakScanner
 from functools import partial
 from atc_mi_interface import general_format, atc_mi_advertising_format
+from construct import EnumIntegerString
 
 bindkey = {
     "A4:C1:38:AA:BB:CC": bytes.fromhex("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
@@ -724,11 +725,13 @@ bindkey = {
 
 async def ble_coro():
     count = [0]
+    MAX_COUNT = 50
+    unbound = EnumIntegerString.new(8, 'XIAOMI_UNBOUND')
     stop_event = asyncio.Event()
 
     def detection_callback(count, device, advertisement_data):
         format_label, adv_data = atc_mi_advertising_format(advertisement_data)
-        if not adv_data:
+        if not adv_data:  # to filter a specific protocol: if format_label != "mi_like" or not adv_data:
             return
         mac_address = bytes.fromhex(device.address.replace(":", ""))
         atc_mi_data = general_format.parse(
@@ -738,10 +741,17 @@ async def ble_coro():
                 bindkey[device.address] if device.address in bindkey else None
             )
         )
-        print(f"{count[0]}. {format_label} advertisement: {atc_mi_data}. "
-            f"RSSI: {advertisement_data.rssi}")
+        type = atc_mi_data.search_all('type')
+        if type and unbound in type:  # skip dumping mi_like unbound frames
+            return
+        print(
+            f"{count[0]}. {device}. Format: {format_label}. "
+            f"RSSI: {advertisement_data.rssi}."
+        )
+        print(" ", atc_mi_data)
+        print('-' * 80)
         count[0] += 1
-        if count[0] == 5:
+        if count[0] == MAX_COUNT:
             stop_event.set()
 
     async with BleakScanner(
@@ -754,15 +764,16 @@ async def ble_coro():
 asyncio.run(ble_coro())
 ```
 
-The program [runs on](https://github.com/hbldh/bleak#features) Windows, Linux, OS/X, Raspberry Pi, Android. It prints the first 5 parsed frames from available thermometers, regardless their configurations. It exploits the `atc_mi_advertising_format()` function, which adds headers to the BLE advertisements produced by the thermometers and discovered by `BleakScanner()` (from *bleak*), so that the resulting frame can be directly processed by the *construct* structures included in the package.
+The program [runs on](https://github.com/hbldh/bleak#features) Windows, Linux, OS/X, Raspberry Pi, Android. It prints the first 50 parsed frames from available devices, regardless their configurations. It exploits the `atc_mi_advertising_format()` function, which adds headers to the BLE advertisements produced by the devices and discovered by `BleakScanner()` (from *bleak*), so that the resulting frame can be directly processed by the *construct* structures included in the package.
 
-After the advertisement dump (e.g., before the *count* increment), you can optionally add:
+You can replace the print dump `print(" ", atc_mi_data)` with:
 
 ```python
-        print("temperature:", atc_mi_data.search_all("^temperature"))
-        print("humidity:", atc_mi_data.search_all("^humidity"))
-        print("battery_level:", atc_mi_data.search_all("^battery_level"))
-        print("battery_v:", atc_mi_data.search_all("^battery_v"))
+        print("    temperature:", atc_mi_data.search_all("^temperature"))
+        print("    humidity:", atc_mi_data.search_all("^humidity"))
+        print("    battery_level:", atc_mi_data.search_all("^battery_level"))
+        print("    battery_v:", atc_mi_data.search_all("^battery_v"))
+        print("    flooding:", atc_mi_data.search_all("^flooding$"))
 ```
 
 ## atc_mi_advertising: BLE Advertisement Visual Editor
