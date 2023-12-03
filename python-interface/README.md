@@ -17,8 +17,8 @@ The following apps are included:
 
 - a configuration tool which can be used with the latest releases of the "pvvx" firmware to browse and update the custom internal configuration parameters; it can be run either via command-line interface or through its GUI, and it also provides an API;
 - the "BLE Advertisement Visual Editor" app (atc_mi_advertising), consisting of a ready-to-use, cross-platform GUI allowing to receive, decode,
-browse, edit and build BLE advertisements for all supported protocols; this app can also be used to easily integrate new BLE devices;
-- the atc_mi_format_test GUI app, collecting test suites of BLE advertising samples.
+browse, edit and build BLE advertisements for all supported protocols; this app can also be used to easily integrate new BLE devices into the data model;
+- the *atc_mi_format_test* GUI app, collecting test suites of BLE advertising samples.
 
 All apps are based on [wxPython](https://www.wxpython.org/). The main components used here are:
 
@@ -731,7 +731,7 @@ async def ble_coro():
 
     def detection_callback(count, device, advertisement_data):
         format_label, adv_data = atc_mi_advertising_format(advertisement_data)
-        if not adv_data:  # to filter a specific protocol: if format_label != "mi_like" or not adv_data:
+        if not adv_data:  # to filter a specific protocol, add: or format_label != "mi_like":
             return
         mac_address = bytes.fromhex(device.address.replace(":", ""))
         atc_mi_data = general_format.parse(
@@ -742,8 +742,8 @@ async def ble_coro():
             )
         )
         type = atc_mi_data.search_all('type')
-        if type and unbound in type:  # skip dumping mi_like unbound frames
-            return
+        if format_label == "mi_like" and type and unbound in type:
+            return  # do not dump mi_like unbound frames
         print(
             f"{count[0]}. {device}. Format: {format_label}. "
             f"RSSI: {advertisement_data.rssi}."

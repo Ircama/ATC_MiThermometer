@@ -83,10 +83,11 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
     def bleak_advertising(self, device, advertisement_data):
         format_label, adv_data = atc_mi_advertising_format(advertisement_data)
         if "Unknown" in format_label:
-            logging.warning(
-                "mac: %s. %s advertisement: %s. RSSI: %s",
+            logging.info(
+                u"\u2474 " + "mac: %s. %s adv.data: %s. RSSI: %s",  # 1
                 device.address, format_label, advertisement_data,
-                advertisement_data.rssi)
+                advertisement_data.rssi
+            )
             return
         if adv_data:
             if not self.not_local_name_rssi:
@@ -95,6 +96,11 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
                     f"{format_label}{self.sep}"
                     f"{advertisement_data.rssi}"
                 )
+            logging.warning(
+                u"\u2475 " + "mac: %s. %s adv.data: %s. RSSI: %s",  # 2
+                device.address, format_label, advertisement_data,
+                advertisement_data.rssi
+            )
             self.add_data(
                 data=adv_data,
                 reference=device.address,
@@ -102,10 +108,12 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
                 date_separator=self.sep,
                 duplicate_separator=self.sep
             )
-        logging.info(
-            "mac: %s. %s advertisement: %s. RSSI: %s",
-            device.address, format_label, advertisement_data,
-            advertisement_data.rssi)
+        else:
+            logging.info(
+                u"\u2476 " + "mac: %s. %s adv.data: %s. RSSI: %s",  # 3
+                device.address, format_label, advertisement_data,
+                advertisement_data.rssi
+            )
 
 
 def main():

@@ -48,27 +48,27 @@ LONG_DESCRIPTION = '''
 
 __Tools and API to process BLE advertisements of BLE devices and sensors__
 
-Python data model, Python API and tools to receive, decode, show and edit
-the BLE advertisements produced by the following sensors:
+Python data model, Python API and tools to receive, decode, show and edit the
+BLE advertisements produced by the following device families:
 
-- Xiaomi Mijia devices
-- BT Home DIY sensors implementing BTHome v1 and v2 protocols
-- Xiaomi Mijia Thermometer with custom
-firmware (ATC_MiThermometer) developed by
-[atc1441](https://github.com/atc1441/ATC_MiThermometer)
-and [pvvx](https://github.com/pvvx/ATC_MiThermometer).
+- Xiaomi Mijia BLE sensors,
+- BT Home DIY sensors implementing BTHome v1 and v2 protocols,
+- Xiaomi Mijia Thermometers with custom firmware (ATC_MiThermometer) developed
+  by [atc1441](https://github.com/atc1441/ATC_MiThermometer) and
+  [pvvx](https://github.com/pvvx/ATC_MiThermometer).
 
 The following apps are included:
 
-- a configuration tool which can be used with the latest releases of the "pvvx"
-  firmware to browse and update the internal configuration parameters; it can
-  be run either via command-line interface or through its GUI, and it also
-  provides an API;
-- the "BLE Advertisement Browser for Home Sensors" app (atc_mi_advertising),
-  consisting of a ready-to-use, cross-platform GUI allowing to receive, decode,  
-  browse, edit and build BLE advertisements for all supported protocols; this
-  app can also be used to easily integrate new BLE devices;
-- the atc_mi_format_test GUI app, collecting test suites of BLE advertising
+- a configuration tool which can be used with the latest releases of the
+  "pvvx" firmware to browse and update the custom internal configuration
+  parameters; it can be run either via command-line interface or through
+  its GUI, and it also provides an API;
+- the "BLE Advertisement Visual Editor" app (atc_mi_advertising), consisting
+  of a ready-to-use, cross-platform GUI allowing to receive, decode,
+  browse, edit and build BLE advertisements for all supported protocols;
+  this app can also be used to easily integrate new BLE devices into the data
+  model;
+- the *atc_mi_format_test* GUI app, collecting test suites of BLE advertising
   samples.
 
 Installation of the API without GUI:
