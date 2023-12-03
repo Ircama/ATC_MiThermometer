@@ -7,20 +7,20 @@
 
 These programs and descriptions are provided by [Ircama](https://github.com/Ircama).
 
-The current section describes a Python data model, Python API and tools to receive, decode, show and edit the BLE advertisements produced by the following sensors:
+The current section offers a Python data model, Python API and tools to receive, decode, show and edit the BLE advertisements produced by the following device families:
 
-- Xiaomi Mijia BLE devices
-- BT Home DIY sensors implementing BTHome v1 and v2 protocols
-- Xiaomi Mijia Thermometer with custom firmware (ATC_MiThermometer) developed by [atc1441](https://github.com/atc1441/ATC_MiThermometer) and [pvvx](https://github.com/pvvx/ATC_MiThermometer).
+- Xiaomi Mijia BLE sensors,
+- BT Home DIY sensors implementing BTHome v1 and v2 protocols,
+- Xiaomi Mijia Thermometers with custom firmware (ATC_MiThermometer) developed by [atc1441](https://github.com/atc1441/ATC_MiThermometer) and [pvvx](https://github.com/pvvx/ATC_MiThermometer).
 
 The following apps are included:
 
-- a configuration tool which can be used with the latest releases of the "pvvx" firmware to browse and update the internal configuration parameters; it can be run either via command-line interface or through its GUI, and it also provides an API;
-- the "BLE Advertisement Browser for Home Sensors" app (atc_mi_advertising), consisting of a ready-to-use, cross-platform GUI allowing to receive, decode,
+- a configuration tool which can be used with the latest releases of the "pvvx" firmware to browse and update the custom internal configuration parameters; it can be run either via command-line interface or through its GUI, and it also provides an API;
+- the "BLE Advertisement Visual Editor" app (atc_mi_advertising), consisting of a ready-to-use, cross-platform GUI allowing to receive, decode,
 browse, edit and build BLE advertisements for all supported protocols; this app can also be used to easily integrate new BLE devices;
 - the atc_mi_format_test GUI app, collecting test suites of BLE advertising samples.
 
-All apps are based on [wxPython](https://www.wxpython.org/). The base components used here are:
+All apps are based on [wxPython](https://www.wxpython.org/). The main components used here are:
 
 - [bleak](https://bleak.readthedocs.io/en/latest/), a cross-platform BLE library;
 - [construct](https://construct.readthedocs.io/en/latest/intro.html), a symmetric Python library allowing to declaratively define a data structure that describes the advertisement frames produced by supported devices, as well as the related configuration frames;
@@ -157,7 +157,7 @@ python3 -m atc_mi_interface.atc_mi_advertising  # or python3 -m atc_mi_interface
 
 ## Decoding and encoding
 
-To only test decoding and encoding, the standard package installation procedure (which also loads *bleak*) is not needed and the following prerequisites can be manually installed instead:
+To only test decoding and encoding, the standard package installation procedure (which also loads *bleak*) is not strictly needed and the following prerequisites can be manually installed instead:
 
 ```
 python3 -m pip install construct pycryptodome arrow
@@ -650,35 +650,60 @@ Output:
 
 ## Running the Packet Log Inspector Shell
 
-Press the "Open Python Shell" button to run the Packet Log Inspector Shell.
+Press the "Open Python Shell" button of the BLE Advertisement Visual Editor app to run the Packet Log Inspector Shell.
 
-Accessing the parsed structure:
+This tool allows to test the usage of the construct data model on a selected advertisement frame and to prototype coding. Check also the related help menu windows.
+
+Accessing the parsed structure of an already selected advertisement frame upon related construct protocol selected within the construct gallery:
 
 ```python
-cfg_data = frame.main_panel.construct_hex_editor.construct_editor._model.root_obj
-contextkw = frame.main_panel.construct_hex_editor.contextkw
-frame.main_panel.construct_hex_editor.binary
+construct = construct_editor.construct  # construct()
+contextkw = construct_hex_editor.contextkw  # contextkw()
+binary = construct_hex_editor.binary  # binary()
+parsed_data = construct_editor.root_obj  # parsed_data()
+
+binary = construct().build(parsed_data(), **contextkw())
+parsed_data = construct().parse(binary(), **contextkw())
+```
+
+*contextkw* is a dictionary with format: `{'mac_address': b'...', 'bindkey': b'...', 'description': '...'}`.
+
+Examples:
+
+```python
+print(construct().parse(binary(), **contextkw()))
+from atc_mi_interface import mi_like_format
+mi_like_format.parse(binary(), mac_address=b'...', bindkey=b'...')
 ```
 
 To read a specific value, use the following examples:
 
 ```python
-cfg_data.custom_format[0].temperature
-cfg_data.bt_home_v2_format[0].data_point.payload[0].data.battery_level
+# custom firmware:
+parsed_data().custom_format[0].temperature
+parsed_data().bt_home_v2_format[0].data_point.payload[0].data.battery_level
+
+# default mi_like firmware:
+parsed_data().mi_like_format[0].data_point.payload[0].data.temperature
+parsed_data().mi_like_format[0].data_point.payload[0].data.battery_level
+
+# General:
+parsed_data().search_all("temperature")
+parsed_data().search_all("battery_level")
 ```
 
 Assign the variable to change it:
 
 ```python
-cfg_data.custom_enc_format[0].codec.temperature = 18.5
-cfg_data.bt_home_v2_format[0].data_point.payload[1].data.temperature = 19.2
+parsed_data().custom_enc_format[0].codec.temperature = 18.5
+parsed_data().bt_home_v2_format[0].data_point.payload[1].data.temperature = 19.2
+parsed_data().mi_like_format[0].data_point.payload[0].data.battery_level = 90
 ```
 
 Build the new bytes and update the UI:
 
 ```python
-from atc_mi_interface import bt_home_v2_format
-frame.main_panel.construct_hex_editor.binary = bt_home_v2_format.build(cfg_data.bt_home_v2_format[0], **contextkw)
+construct_hex_editor.binary = construct().build(parsed_data(), **contextkw())
 ```
 
 ## Processing BLE advertisements
@@ -740,7 +765,7 @@ After the advertisement dump (e.g., before the *count* increment), you can optio
         print("battery_v:", atc_mi_data.search_all("^battery_v"))
 ```
 
-## atc_mi_advertising: BLE Advertisement Browser GUI
+## atc_mi_advertising: BLE Advertisement Visual Editor
 
 [atc_mi_advertising](atc_mi_interface/atc_mi_advertising.py) is a Python GUI allowing BLE advertisement analysis of data transmitted by thermometers, including a function to edit data and perform testing.
 
@@ -772,7 +797,7 @@ optional arguments:
                         unencrypted part of the frame is decoded
   -V, --version         Print version and exit
 
-Xiaomi Mijia Thermometer - BLE Advertisement Browser
+Xiaomi Mijia Thermometer - BLE Advertisement Visual Editor
 ```
 
 Summary of the possible invocation modes:
@@ -1286,9 +1311,9 @@ from atc_mi_interface import cfg, normalize_report
 
 data = "55 43 85 10 00 00 28 04 A9 31 31 04 B4 00"  # settings
 
-cfg_data = cfg.parse(bytes.fromhex(data)[1:])  # obtain the *construct* form from the settings
-cfg_data.temp_offset = 1.2                     # perform the assignment
-new_data = cfg.build(cfg_data)                 # build the new settings
+parsed_data = cfg.parse(bytes.fromhex(data)[1:])  # obtain the *construct* form from the settings
+parsed_data.temp_offset = 1.2                     # perform the assignment
+new_data = cfg.build(parsed_data)                 # build the new settings
 
 print(new_data.hex(" "))
 print(normalize_report(str(cfg.parse(new_data))))
@@ -1327,9 +1352,9 @@ async def main(address):
                 for data in data_out:
                     if bytes([data[0]]) == command_to_set:
                         print("Initial settings:", data.hex(" "))
-                        cfg_data = cfg.parse(data[1:])  # obtain the *construct* form
-                        cfg_data.temp_offset = temp_offset_value  # perform the assignment
-                        new_char = command_to_set + cfg.build(cfg_data)[1:]  # build the new settings removing the initial byte (version ID) and adding the command (command_to_set)
+                        parsed_data = cfg.parse(data[1:])  # obtain the *construct* form
+                        parsed_data.temp_offset = temp_offset_value  # perform the assignment
+                        new_char = command_to_set + cfg.build(parsed_data)[1:]  # build the new settings removing the initial byte (version ID) and adding the command (command_to_set)
                         print("New settings:", new_char.hex(" "))
                         await client.write_gatt_char(  # store the new settings
                             characteristic_uuid, new_char, response=True)

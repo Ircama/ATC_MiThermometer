@@ -37,7 +37,7 @@ class AtcMiConstructFrame(wx.Frame):
             **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.SetTitle("BLE Advertisement Browser for Home Sensors")
+        self.SetTitle("BLE Advertisement Visual Editor")
         self.SetSize(1000, 600)
         self.SetIcon(self.icon_image.GetIcon())
         self.Center()
@@ -111,7 +111,7 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
 def main():
     parser = argparse.ArgumentParser(
         prog='atc_mi_advertising',
-        epilog='Xiaomi Mijia Thermometer - BLE Advertisement Browser')
+        epilog='Xiaomi Mijia Thermometer - BLE Advertisement Visual Editor')
     parser.add_argument(
         '-s',
         "--start",
