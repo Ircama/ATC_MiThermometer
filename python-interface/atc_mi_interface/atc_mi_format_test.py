@@ -78,6 +78,15 @@ def main():
                 },
             ),
             (
+                "mi_like (unbound)",
+                {
+                    "binary": bytes.fromhex(
+                        "0f 16 95 fe 30 58 5b 05 cc cc bb aa 38 c1 a4 08"
+                    ),
+                    "mac_address": "A4:C1:38:AA:BB:CC",
+                },
+            ),
+            (
                 "mi_like_enc (temperature)",
                 {
                     "binary": bytes.fromhex(
@@ -102,6 +111,15 @@ def main():
                         "19 16 95 fe 58 58 5b 05 ed cc bb aa 38 c1 a4 de 6d f0 "
                         "74 b3 00 00 f2 ef 0e 53"),
                     "mac_address": "A4:C1:38:AA:BB:CC",
+                },
+            ),
+            (
+                "mi_like_enc (flooding)",
+                {
+                    "binary": bytes.fromhex(
+                        "19 16 95 fe 58 59 63 08 18 cc bb aa 44 ef 54 ce ce 8a "
+                        "cf 08 00 00 aa 33 f6 4d"),
+                    "mac_address": "54:EF:44:AA:BB:CC",
                 },
             ),
             (
@@ -220,7 +238,8 @@ def main():
     )
 
     ref_key_descriptor = {  # ref_key_descriptor dictionary for the overall data
-        "A4:C1:38:AA:BB:CC": {"bindkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+        "A4:C1:38:AA:BB:CC": {"bindkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        "54:EF:44:AA:BB:CC": {"bindkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
     }
 
 
