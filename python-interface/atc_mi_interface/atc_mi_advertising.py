@@ -162,6 +162,12 @@ def main():
              "so that the unencrypted part of the frame is decoded"
      )
     parser.add_argument(
+        '-p',
+        "--passive",
+        dest='passive',
+        action='store_true',
+        help="Use BLE passive scanning (default is active scanning)")
+    parser.add_argument(
         '-V',
         "--version",
         dest='version',
@@ -179,12 +185,14 @@ def main():
         app = wit.InspectableApp()
     else:
         app = wx.App(False)
+    scanning_mode = {'scanning_mode': 'passive'} if args.passive else {}
     frame = AtcMiConstructFrame(
         None,
         maximized=args.maximized,
         loadfile=loadfile,
         auto_ble_start=args.auto_ble_start,
-        not_local_name_rssi=args.not_local_name_rssi
+        not_local_name_rssi=args.not_local_name_rssi,
+        bleak_scanner_kwargs=scanning_mode
     )
 
     if args.disable_encr_err:

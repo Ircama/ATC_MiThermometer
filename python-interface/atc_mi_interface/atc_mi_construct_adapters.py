@@ -7,8 +7,9 @@ import re
 MacVendor = Switch(
     this.MAC[:9],
     {
-        "A4:C1:38:": Computed("Telink Semiconductor (Taipei) Co. Ltd."),
+        "A4:C1:38:": Computed("Telink Semiconductor (Taipei) Co. Ltd"),
         "54:EF:44:": Computed("Lumi United Technology Co., Ltd"),
+        "E4:AA:EC:": Computed("Tianjin Hualai Tech Co, Ltd"),
     },
     default=Computed("Unknown vendor"),
 )

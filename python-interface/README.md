@@ -743,7 +743,7 @@ async def ble_coro():
         )
         type = atc_mi_data.search_all('type')
         if format_label == "mi_like" and type and unbound in type:
-            return  # do not dump mi_like unbound frames
+            return  # do not dump mi_like unbound frames, occurring with active scanning
         print(
             f"{count[0]}. {device}. Format: {format_label}. "
             f"RSSI: {advertisement_data.rssi}."
@@ -794,7 +794,7 @@ With a proper Python installation, the entry-point `atc_mi_advertising` should a
 Program command line options:
 
 ```
-usage: atc_mi_advertising [-h] [-s] [-m] [-l LOG_DATA_FILE [LOG_DATA_FILE ...]] [-i] [-n] [-d] [-V]
+usage: atc_mi_advertising [-h] [-s] [-m] [-l LOG_DATA_FILE [LOG_DATA_FILE ...]] [-i] [-n] [-d] [-p] [-V]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -804,8 +804,9 @@ optional arguments:
                         log data file(s) to be automatically loaded at startup
   -i, --inspectable     enable Inspection (Ctrl-Alt-I)
   -n, --name            Do not show the local name and RSSI in each label
-  -d, --disable         Disable decryption errors, showing them in the status bar, so that the
-                        unencrypted part of the frame is decoded
+  -d, --disable         Disable decryption errors, showing them in the status bar, so that the unencrypted
+                        part of the frame is decoded
+  -p, --passive         Use BLE passive scanning (default is active scanning)
   -V, --version         Print version and exit
 
 Xiaomi Mijia Thermometer - BLE Advertisement Visual Editor
