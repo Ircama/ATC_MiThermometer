@@ -720,6 +720,7 @@ from construct import EnumIntegerString
 bindkey = {
     "A4:C1:38:AA:BB:CC": bytes.fromhex("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
     "A4:C1:38:AA:BB:00": bytes.fromhex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
+    "E4:AA:EC:AA:BB:CC": bytes.fromhex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
     # ...
 }
 
@@ -774,6 +775,8 @@ You can replace the print dump `print(" ", atc_mi_data)` with:
         print("    battery_level:", atc_mi_data.search_all("^battery_level"))
         print("    battery_v:", atc_mi_data.search_all("^battery_v"))
         print("    flooding:", atc_mi_data.search_all("^flooding$"))
+        print("    door:", atc_mi_data.search_all("^door$"))
+        print("    light:", atc_mi_data.search_all("^light_detected$"))
 ```
 
 ## atc_mi_advertising: BLE Advertisement Visual Editor

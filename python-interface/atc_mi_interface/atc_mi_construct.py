@@ -125,8 +125,8 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             XIAOMI_DATA_ID_WaterBoil            =0x1005,
             XIAOMI_DATA_ID_Humidity             =0x1006,
             XIAOMI_DATA_ID_LightIlluminance     =0x1007,
-            XIAOMI_DATA_ID_SoilMoisture         =0x1008,
-            XIAOMI_DATA_ID_SoilECvalue          =0x1009,
+            XIAOMI_DATA_ID_SoilMoisture         =0x1008,  # Soil moisture
+            XIAOMI_DATA_ID_SoilECvalue          =0x1009,  # Soil EC value
             XIAOMI_DATA_ID_Power                =0x100A,  # Battery
             XIAOMI_DATA_ID_TempAndHumidity      =0x100D,
             XIAOMI_DATA_ID_Lock                 =0x100E,
@@ -138,17 +138,21 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             XIAOMI_DATA_ID_Flooding             =0x1014,
             XIAOMI_DATA_ID_Smoke                =0x1015,
             XIAOMI_DATA_ID_Gas                  =0x1016,
-            XIAOMI_DATA_ID_NoOneMoves           =0x1017,
+            XIAOMI_DATA_ID_NoOneMoves           =0x1017,  # No one moves
             XIAOMI_DATA_ID_LightIntensity       =0x1018,
             XIAOMI_DATA_ID_DoorSensor           =0x1019,
             XIAOMI_DATA_ID_WeightAttributes     =0x101A,
             XIAOMI_DATA_ID_NoOneMovesOverTime   =0x101B,  # No one moves over time
             XIAOMI_DATA_ID_SmartPillow          =0x101C,
             XIAOMI_DATA_ID_FormaldehydeNew      =0x101D,
-            XIAOMI_DATA_ID_BodyTemperature      =0x2000,
-            XIAOMI_DATA_ID_Bracelet             =0x2001,
-            XIAOMI_DATA_ID_VacuumCleaner        =0x2002,
-            XIAOMI_DATA_ID_BPBracelet           =0x2003,
+            XIAOMI_DATA_ID_BodyTemperature      =0x2000,  # measured every second
+            XIAOMI_DATA_ID_Bracelet             =0x2001,  # Mi Band (Huami)
+            XIAOMI_DATA_ID_VacuumCleaner        =0x2002,  # (Rui Mi)
+            XIAOMI_DATA_ID_BPBracelet           =0x2003,  # (like one)
+            XIAOMI_DATA_ID_Monitor              =0x3000,  # Monitor (flowers and grasses)
+            XIAOMI_DATA_ID_SensorLocation       =0x3001,  # Sensor location (Qingping)
+            XIAOMI_DATA_ID_PomodoroIncident     =0x3002,  # Pomodoro incident (Qingping)
+            XIAOMI_DATA_ID_ToothbrushIncident   =0x3003,  # Xiaobei toothbrush incident (Qinghe Xiaobei) 
             UNBOUND_DEVICE                      =0x0128,
         ),
         Enum(Int8ul,
@@ -212,9 +216,9 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
                 "type_length" / Const(b"\x01"),
                 "lock" / BitStruct(
                     "child lock status" / Flag,  # (1: open; 0: close)
-                    "oblique bolt state" / Flag,  # (1: pop up; 0: retract)
+                    "oblique bolt state" / Flag,  # (1: eject; 0: retract)
                     "dull state" / Flag,  # (1: eject; 0: retract)
-                    "square bolt status" / Flag,  # (1: pop up; 0: retract)
+                    "square bolt status" / Flag,  # (1: eject; 0: retract)
                 ),
                 #   0x00: Unlock state (all bolts retracted)
                 #   0x04: The lock bolt pops out (the oblique bolt pops out)
@@ -270,7 +274,7 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             ),
             "XIAOMI_DATA_ID_LightIntensity": Struct(  # 18
                 "type_length" / Const(b"\x01"),
-                "light" / Flag,
+                "light_detected" / Flag,
             ),
             "XIAOMI_DATA_ID_DoorSensor": Struct(  # 19
                 "type_length" / Const(b"\x01"),
@@ -278,7 +282,9 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
                     XIAOMI_door_open                =0x00,
                     XIAOMI_door_closed              =0x01,
                     XIAOMI_door_not_closed_in_time  =0x02,
-                    XIAOMI_door_reset               =0x03,
+                    XIAOMI_door_reset               =0x03, # knock on the door
+                    XIAOMI_door_pry                 =0x04, # Pry the door
+                    XIAOMI_door_stuck               =0x05, # The door is stuck
                 )
             ),
             "XIAOMI_DATA_ID_WeightAttributes": Struct(  # 1A
@@ -315,7 +321,7 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
                 "battery_power" / Int8ul,
                 "battery_power_unit" / Computed("%"),
             ),
-            "XIAOMI_DATA_ID_Bracelet": Struct(
+            "XIAOMI_DATA_ID_Bracelet": Struct(  # Huami bracelet attributes
                 "type_length" / Const(b"\x04"),
                 "steps" / Int16ul,  # Number of steps
                 "sleep" / Enum(Int8ul,
@@ -325,7 +331,7 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
                 "RSSI_level" / Int8ul,  # Absolute value of signal intensity
                 "RSSI_level_unit" / Computed("dBm"),
             ),
-            "XIAOMI_DATA_ID_VacuumCleaner": Struct(
+            "XIAOMI_DATA_ID_VacuumCleaner": Struct(  # Ruimi vacuum cleaner properties
                 "type_length" / Const(b"\x02"),
                 "mode" / Enum(Int8ul,
                     XIAOMI_charging    =0x00,
@@ -336,11 +342,38 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
                 ),
                 "gear" / Int8ul,  # Current standard gear
             ),
-            "XIAOMI_DATA_ID_BPBracelet": Struct(
+            "XIAOMI_DATA_ID_BPBracelet": Struct(  # Black plus bracelet attributes
                 "type_length" / Const(b"\x04"),
                 "steps" / Int16ul,  # Number of steps of the day
                 "heart_rate" / Int8ul,  # Last heart rate
                 "status" / Int8ul,  # Current activity status
+            ),
+            "XIAOMI_DATA_ID_Monitor": Struct(  # Flower and grass detector event
+                "type_length" / Const(b"\x01"),
+                "status" / Flag,  # Normal (0x00), unplug (0x01)
+            ),
+            "XIAOMI_DATA_ID_SensorLocation": Struct(  # Qingping sensor event
+                "type_length" / Const(b"\x01"),
+                "position" / Flag,  # Separate from the base (0x00), connect (0x01)
+            ),
+            "XIAOMI_DATA_ID_PomodoroIncident": Struct(  # Qingping Pomodoro Event
+                "type_length" / Const(b"\x01"),
+                "event_type" / Flag,  # 0-Start of Pomodoro, 1-End of Pomodoro, 2-Start of rest, 3-End of rest
+            ),
+            "XIAOMI_DATA_ID_ToothbrushIncident": Struct(  # Beckham toothbrush incident
+                "type_length" / Int8ul,
+                "state" / Flag,  # 0: Start of brushing, 1: End of brushing
+                "date" / Timestamp(Int32ul, 1, 1970),  # UTC time
+                "date_is_stored" / IfThenElse(
+                    lambda this: this.date.timestamp() > 0,
+                    Computed("True"),
+                    Computed("False"),
+                ),
+                "score" / IfThenElse(
+                    lambda this: this.type_length == 6,
+                    Int8ul,  # This parameter can be added to the end of brushing event: the score of this brushing, 0~100
+                    Computed("no_data"),
+                )
             ),
             "UNBOUND_DEVICE": Const(b"\x00"),
         }
@@ -479,225 +512,228 @@ bt_home_data = Struct(
     ),
     "data" / Switch(this.bt_home_type,
         {
-            "BT_HOME_packet_id": Struct(
-                "packet_id" / Int8ul,  # integer (0..255)
-            ),
-            "BT_HOME_battery": Struct(
-                "battery_level" / Int8ul,  # 0..100 %
-                "battery_level_unit" / Computed("%"),
-            ),
-            "BT_HOME_temperature": Struct(
-                "temperature" / Int16sl_x100,
-                "temperature_unit" / Computed("°C"),
-            ),
-            "BT_HOME_humidity": Struct(
-                "humidity" / Int16ul_x100,
-                "humidity_unit" / Computed("%"),
-            ),
-            "BT_HOME_humidity_8": Struct(
-                "humidity_8" / Int8ul,
-                "humidity_8_unit" / Computed("%"),
-            ),
-            "BT_HOME_pressure": Struct(
-                "pressure" / Int24ul_x100,
-                "pressure_unit" / Computed("hPa"),
-            ),
-            "BT_HOME_illuminance": Struct(
-                "illuminance" / Int24ul_x100,
-                "illuminance_unit" / Computed("lux"),
-            ),
-            "BT_HOME_weight": Struct(
-                "weight" / Int16ul_x100,
-                "weight_unit" / Computed("kg"),
-            ),
-            "BT_HOME_weight_lb": Struct(
-                "weight_lb" / Int16ul_x100,
-                "weight_lb_unit" / Computed("lb"),
-            ),
-            "BT_HOME_dewpoint": Struct(
-                "dewpoint" / Int16sl_x100,
-                "dewpoint_unit" / Computed("°C"),
-            ),
-            "BT_HOME_count_i": Struct(
-                "count_i" / Int8ul,  # integer (0..255)
-            ),
-            "BT_HOME_count_s": Struct(
-                "count_s" / Int16ul,
-            ),
-            "BT_HOME_count_m": Struct(
-                "count_m" / Int24ul,
-            ),
-            "BT_HOME_count_l": Struct(
-                "count_l" / Int32ul,  # integer (0..4294967295)
-            ),
-            "BT_HOME_energy": Struct(
-                "energy" / Int24ul_x1000,
-                "energy_unit" / Computed("kWh"),
-            ),
-            "BT_HOME_power": Struct(
-                "power" / Int24ul_x100,
-                "power_unit" / Computed("W"),
-            ),
-            "BT_HOME_voltage": Struct(
-                "battery_v" / Int16ul_x1000,
-                "battery_v_unit" / Computed("V"),
-            ),
-            "BT_HOME_pm2x5": Struct(
-                "pm2x5" / Int16ul,
-                "pm2x5_unit" / Computed("ug/m3"),
-            ),
-            "BT_HOME_pm10": Struct(
-                "pm10" / Int16ul,
-                "pm10_unit" / Computed("ug/m3"),
-            ),
-            "BT_HOME_co2": Struct(
-                "co2" / Int16ul,
-                "co2_unit" / Computed("ppm"),
-            ),
-            "BT_HOME_tvoc": Struct(
-                "tvoc" / Int16ul,
-                "tvoc_unit" / Computed("ug/m3"),
-            ),
-            "BT_HOME_moisture": Struct(
-                "moisture" / Int16ul_x100,
-                "moisture_unit" / Computed("%"),
-            ),
-            "BT_HOME_moisture_8": Struct(
-                "moisture_8" / Int8ul,
-                "moisture_8_unit" / Computed("%"),
-            ),
-            "BT_HOME_timestamp": Struct(
-                "date" / Timestamp(Int32ul, 1, 1970),
-                "date_is_stored" / IfThenElse(
-                    lambda this: this.date.timestamp() > 0,
-                    Computed("True"),
-                    Computed("False"),
-                )
-            ),
-            "BT_HOME_acceleration": Struct(
-                "acceleration" / Int16ul_x1000,
-                "acceleration_unit" / Computed("m/s²"),
-            ),
-            "BT_HOME_gyroscope": Struct(
-                "gyroscope" / Int16ul_x1000,
-                "gyroscope_unit" / Computed("°/s"),
-            ),
-            "BT_HOME_boolean": BitStruct(
-                Padding(7),
-                "boolean" / Flag,  # boolean
-            ),
-            "BT_HOME_switch": BitStruct(
-                Padding(7),
-                "switch" / Flag,  # boolean
-            ),
-            "BT_HOME_opened": BitStruct(
-                Padding(7),
-                "opened" / Flag,  # boolean
-            ),
-            "BT_HOME_low_battery": BitStruct(
-                Padding(7),
-                "low_battery" / Flag,
-            ),
-            "BT_HOME_chg_battery": BitStruct(
-                Padding(7),
-                "charging_battery" / Flag,
-            ),
-            "BT_HOME_carbon_monoxide": BitStruct(
-                Padding(7),
-                "carbon_monoxide" / Flag,
-            ),
-            "BT_HOME_cold": BitStruct(
-                Padding(7),
-                "cold" / Flag,
-            ),
-            "BT_HOME_connectivity": BitStruct(
-                Padding(7),
-                "connectivity" / Flag,
-            ),
-            "BT_HOME_door": BitStruct(
-                Padding(7),
-                "door_open" / Flag,
-            ),
-            "BT_HOME_garage_door": BitStruct(
-                Padding(7),
-                "garage_door_open" / Flag,
-            ),
-            "BT_HOME_gas": BitStruct(
-                Padding(7),
-                "gas_detected" / Flag,
-            ),
-            "BT_HOME_heat": BitStruct(
-                Padding(7),
-                "heat_hot" / Flag,
-            ),
-            "BT_HOME_light": BitStruct(
-                Padding(7),
-                "light_detected" / Flag,
-            ),
-            "BT_HOME_lock": BitStruct(
-                Padding(7),
-                "lock_unlocked" / Flag,
-            ),
-            "BT_HOME_moisture_b": BitStruct(
-                Padding(7),
-                "moisture_wet" / Flag,
-            ),
-            "BT_HOME_motion": BitStruct(
-                Padding(7),
-                "motion_detected" / Flag,
-            ),
-            "BT_HOME_moving": BitStruct(
-                Padding(7),
-                "moving" / Flag,
-            ),
-            "BT_HOME_occupancy": BitStruct(
-                Padding(7),
-                "occupancy_detected" / Flag,
-            ),
-            "BT_HOME_plug": BitStruct(
-                Padding(7),
-                "plug_plugged" / Flag,
-            ),
-            "BT_HOME_presence": BitStruct(
-                Padding(7),
-                "presence" / Flag,
-            ),
-            "BT_HOME_problem": BitStruct(
-                Padding(7),
-                "problem" / Flag,
-            ),
-            "BT_HOME_running": BitStruct(
-                Padding(7),
-                "running" / Flag,
-            ),
-            "BT_HOME_safety": BitStruct(
-                Padding(7),
-                "safe" / Flag,
-            ),
-            "BT_HOME_smoke": BitStruct(
-                Padding(7),
-                "smoke_detected" / Flag,
-            ),
-            "BT_HOME_sound": BitStruct(
-                Padding(7),
-                "sound_detected" / Flag,
-            ),
-            "BT_HOME_tamper": BitStruct(
-                Padding(7),
-                "tamper_on" / Flag,
-            ),
-            "BT_HOME_vibration": BitStruct(
-                Padding(7),
-                "vibration_detected" / Flag,
-            ),
-            "BT_HOME_window": BitStruct(
-                Padding(7),
-                "window_open" / Flag,
-            ),
-        } | {
-            f"{t}{i:02d}": PaddedString(i, "utf8")
-            for t in ["BT_HOME_text_", "BT_HOME_raw_"]
-            for i in range(31)
+            **{  # first dictionary
+                "BT_HOME_packet_id": Struct(
+                    "packet_id" / Int8ul,  # integer (0..255)
+                ),
+                "BT_HOME_battery": Struct(
+                    "battery_level" / Int8ul,  # 0..100 %
+                    "battery_level_unit" / Computed("%"),
+                ),
+                "BT_HOME_temperature": Struct(
+                    "temperature" / Int16sl_x100,
+                    "temperature_unit" / Computed("°C"),
+                ),
+                "BT_HOME_humidity": Struct(
+                    "humidity" / Int16ul_x100,
+                    "humidity_unit" / Computed("%"),
+                ),
+                "BT_HOME_humidity_8": Struct(
+                    "humidity_8" / Int8ul,
+                    "humidity_8_unit" / Computed("%"),
+                ),
+                "BT_HOME_pressure": Struct(
+                    "pressure" / Int24ul_x100,
+                    "pressure_unit" / Computed("hPa"),
+                ),
+                "BT_HOME_illuminance": Struct(
+                    "illuminance" / Int24ul_x100,
+                    "illuminance_unit" / Computed("lux"),
+                ),
+                "BT_HOME_weight": Struct(
+                    "weight" / Int16ul_x100,
+                    "weight_unit" / Computed("kg"),
+                ),
+                "BT_HOME_weight_lb": Struct(
+                    "weight_lb" / Int16ul_x100,
+                    "weight_lb_unit" / Computed("lb"),
+                ),
+                "BT_HOME_dewpoint": Struct(
+                    "dewpoint" / Int16sl_x100,
+                    "dewpoint_unit" / Computed("°C"),
+                ),
+                "BT_HOME_count_i": Struct(
+                    "count_i" / Int8ul,  # integer (0..255)
+                ),
+                "BT_HOME_count_s": Struct(
+                    "count_s" / Int16ul,
+                ),
+                "BT_HOME_count_m": Struct(
+                    "count_m" / Int24ul,
+                ),
+                "BT_HOME_count_l": Struct(
+                    "count_l" / Int32ul,  # integer (0..4294967295)
+                ),
+                "BT_HOME_energy": Struct(
+                    "energy" / Int24ul_x1000,
+                    "energy_unit" / Computed("kWh"),
+                ),
+                "BT_HOME_power": Struct(
+                    "power" / Int24ul_x100,
+                    "power_unit" / Computed("W"),
+                ),
+                "BT_HOME_voltage": Struct(
+                    "battery_v" / Int16ul_x1000,
+                    "battery_v_unit" / Computed("V"),
+                ),
+                "BT_HOME_pm2x5": Struct(
+                    "pm2x5" / Int16ul,
+                    "pm2x5_unit" / Computed("ug/m3"),
+                ),
+                "BT_HOME_pm10": Struct(
+                    "pm10" / Int16ul,
+                    "pm10_unit" / Computed("ug/m3"),
+                ),
+                "BT_HOME_co2": Struct(
+                    "co2" / Int16ul,
+                    "co2_unit" / Computed("ppm"),
+                ),
+                "BT_HOME_tvoc": Struct(
+                    "tvoc" / Int16ul,
+                    "tvoc_unit" / Computed("ug/m3"),
+                ),
+                "BT_HOME_moisture": Struct(
+                    "moisture" / Int16ul_x100,
+                    "moisture_unit" / Computed("%"),
+                ),
+                "BT_HOME_moisture_8": Struct(
+                    "moisture_8" / Int8ul,
+                    "moisture_8_unit" / Computed("%"),
+                ),
+                "BT_HOME_timestamp": Struct(
+                    "date" / Timestamp(Int32ul, 1, 1970),
+                    "date_is_stored" / IfThenElse(
+                        lambda this: this.date.timestamp() > 0,
+                        Computed("True"),
+                        Computed("False"),
+                    )
+                ),
+                "BT_HOME_acceleration": Struct(
+                    "acceleration" / Int16ul_x1000,
+                    "acceleration_unit" / Computed("m/s²"),
+                ),
+                "BT_HOME_gyroscope": Struct(
+                    "gyroscope" / Int16ul_x1000,
+                    "gyroscope_unit" / Computed("°/s"),
+                ),
+                "BT_HOME_boolean": BitStruct(
+                    Padding(7),
+                    "boolean" / Flag,  # boolean
+                ),
+                "BT_HOME_switch": BitStruct(
+                    Padding(7),
+                    "switch" / Flag,  # boolean
+                ),
+                "BT_HOME_opened": BitStruct(
+                    Padding(7),
+                    "opened" / Flag,  # boolean
+                ),
+                "BT_HOME_low_battery": BitStruct(
+                    Padding(7),
+                    "low_battery" / Flag,
+                ),
+                "BT_HOME_chg_battery": BitStruct(
+                    Padding(7),
+                    "charging_battery" / Flag,
+                ),
+                "BT_HOME_carbon_monoxide": BitStruct(
+                    Padding(7),
+                    "carbon_monoxide" / Flag,
+                ),
+                "BT_HOME_cold": BitStruct(
+                    Padding(7),
+                    "cold" / Flag,
+                ),
+                "BT_HOME_connectivity": BitStruct(
+                    Padding(7),
+                    "connectivity" / Flag,
+                ),
+                "BT_HOME_door": BitStruct(
+                    Padding(7),
+                    "door_open" / Flag,
+                ),
+                "BT_HOME_garage_door": BitStruct(
+                    Padding(7),
+                    "garage_door_open" / Flag,
+                ),
+                "BT_HOME_gas": BitStruct(
+                    Padding(7),
+                    "gas_detected" / Flag,
+                ),
+                "BT_HOME_heat": BitStruct(
+                    Padding(7),
+                    "heat_hot" / Flag,
+                ),
+                "BT_HOME_light": BitStruct(
+                    Padding(7),
+                    "light_detected" / Flag,
+                ),
+                "BT_HOME_lock": BitStruct(
+                    Padding(7),
+                    "lock_unlocked" / Flag,
+                ),
+                "BT_HOME_moisture_b": BitStruct(
+                    Padding(7),
+                    "moisture_wet" / Flag,
+                ),
+                "BT_HOME_motion": BitStruct(
+                    Padding(7),
+                    "motion_detected" / Flag,
+                ),
+                "BT_HOME_moving": BitStruct(
+                    Padding(7),
+                    "moving" / Flag,
+                ),
+                "BT_HOME_occupancy": BitStruct(
+                    Padding(7),
+                    "occupancy_detected" / Flag,
+                ),
+                "BT_HOME_plug": BitStruct(
+                    Padding(7),
+                    "plug_plugged" / Flag,
+                ),
+                "BT_HOME_presence": BitStruct(
+                    Padding(7),
+                    "presence" / Flag,
+                ),
+                "BT_HOME_problem": BitStruct(
+                    Padding(7),
+                    "problem" / Flag,
+                ),
+                "BT_HOME_running": BitStruct(
+                    Padding(7),
+                    "running" / Flag,
+                ),
+                "BT_HOME_safety": BitStruct(
+                    Padding(7),
+                    "safe" / Flag,
+                ),
+                "BT_HOME_smoke": BitStruct(
+                    Padding(7),
+                    "smoke_detected" / Flag,
+                ),
+                "BT_HOME_sound": BitStruct(
+                    Padding(7),
+                    "sound_detected" / Flag,
+                ),
+                "BT_HOME_tamper": BitStruct(
+                    Padding(7),
+                    "tamper_on" / Flag,
+                ),
+                "BT_HOME_vibration": BitStruct(
+                    Padding(7),
+                    "vibration_detected" / Flag,
+                ),
+                "BT_HOME_window": BitStruct(
+                    Padding(7),
+                    "window_open" / Flag,
+                ),
+            },
+            **{  # merge this second dictionary with syntax suitable to Python 3.5+
+                f"{t}{i:02d}": PaddedString(i, "utf8")
+                for t in ["BT_HOME_text_", "BT_HOME_raw_"]
+                for i in range(31)
+            }
         }
     )
 )
