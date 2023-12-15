@@ -15,10 +15,12 @@ from .construct_module import *  # It includes setting the gallery_descriptor di
 
 def main():
     app = wx.App(False)
+    width, height = wx.GetDisplaySize()
     frame = wx.Frame(
         None,
+        pos=(int(width * 5 / 100), int(height * 5 / 100)),
         title="Xiaomi Mijia Thermometer - ATC MI Formats",
-        size=(1000, 500)
+        size=(int(width * 90 / 100), int(height * 90 / 100))
     )
 
     ordered_samples = OrderedDict(

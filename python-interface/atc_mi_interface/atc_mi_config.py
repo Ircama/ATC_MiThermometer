@@ -396,7 +396,8 @@ def gui_edit(editing_structure: dict, args: argparse.Namespace):
             super().__init__(*args, **kwargs)
 
             self.SetTitle("Xiaomi Mijia Thermometer - Configuration Editor")
-            self.SetSize(1000, 600)
+            width, height = wx.GetDisplaySize()
+            self.SetSize(int(width * 90 / 100), int(height * 90 / 100))
             self.Center()
 
             self.main_panel = ConfigEditorPanel(

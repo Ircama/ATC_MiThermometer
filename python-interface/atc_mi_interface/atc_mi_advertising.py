@@ -38,7 +38,8 @@ class AtcMiConstructFrame(wx.Frame):
         super().__init__(*args, **kwargs)
 
         self.SetTitle("BLE Advertisement Visual Editor")
-        self.SetSize(1000, 700)
+        width, height = wx.GetDisplaySize()
+        self.SetSize(int(width * 90 / 100), int(height * 90 / 100))
         self.SetIcon(self.icon_image.GetIcon())
         self.Center()
 
