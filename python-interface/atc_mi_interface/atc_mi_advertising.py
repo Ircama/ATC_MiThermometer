@@ -76,10 +76,9 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
         ):
         super().__init__(*args, **kwargs)
         self.not_local_name_rssi = not_local_name_rssi
-        if auto_ble_start:
-            self.ble_start()
-
         self.sep = u" \u250a "  # thin vertical dotted bar
+        if auto_ble_start:
+            wx.CallAfter(self.ble_start)
 
     def bleak_advertising(self, device, advertisement_data):
         format_label, adv_data = atc_mi_advertising_format(advertisement_data)
