@@ -37,7 +37,7 @@ class AtcMiConstructFrame(wx.Frame):
             **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.SetTitle("BLE Advertisement Visual Editor")
+        self.SetTitle("BLE Service Data AD Visual Editor")
         width, height = wx.GetDisplaySize()
         self.SetSize(int(width * 90 / 100), int(height * 90 / 100))
         self.SetIcon(self.icon_image.GetIcon())
@@ -70,15 +70,12 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
     def __init__(
             self,
             *args,
-            auto_ble_start=False,
             not_local_name_rssi=False,
             **kwargs
         ):
         super().__init__(*args, **kwargs)
         self.not_local_name_rssi = not_local_name_rssi
         self.sep = u" \u250a "  # thin vertical dotted bar
-        if auto_ble_start:
-            wx.CallAfter(self.ble_start)
 
     def bleak_advertising(self, device, advertisement_data):
         format_label, adv_data = atc_mi_advertising_format(advertisement_data)
@@ -101,7 +98,7 @@ class AtcMiBleakScannerConstruct(BleakScannerConstruct):
                 device.address, format_label, advertisement_data,
                 advertisement_data.rssi
             )
-            self.add_data(
+            self.add_packet_frame(
                 data=adv_data,
                 reference=device.address,
                 append_label=format_label,

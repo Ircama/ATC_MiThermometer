@@ -16,7 +16,7 @@ The current section offers a Python data model, Python API and tools to receive,
 The following apps are included:
 
 - a configuration tool which can be used with the latest releases of the "pvvx" firmware to browse and update the custom internal configuration parameters; it can be run either via command-line interface or through its GUI, and it also provides an API;
-- the "BLE Advertisement Visual Editor" app (atc_mi_advertising), consisting of a ready-to-use, cross-platform GUI allowing to receive, decode,
+- the "BLE Service Data AD Visual Editor" app (atc_mi_advertising), consisting of a ready-to-use, cross-platform GUI allowing to receive, decode,
 browse, edit and build BLE advertisements for all supported protocols; this app can also be used to easily integrate new BLE devices into the data model;
 - the *atc_mi_format_test* GUI app, collecting test suites of BLE advertising samples.
 
@@ -650,7 +650,7 @@ Output:
 
 ## Running the Packet Log Inspector Shell
 
-Press the "Open Python Shell" button of the BLE Advertisement Visual Editor app to run the Packet Log Inspector Shell.
+Press the "Open Python Shell" button of the BLE Service Data AD Visual Editor app to run the Packet Log Inspector Shell.
 
 This tool allows to test the usage of the construct data model on a selected advertisement frame and to prototype coding. Check also the related help menu windows.
 
@@ -779,7 +779,7 @@ You can replace the print dump `print(" ", atc_mi_data)` with:
         print("    light:", atc_mi_data.search_all("^light_detected$"))
 ```
 
-## atc_mi_advertising: BLE Advertisement Visual Editor
+## atc_mi_advertising: BLE Service Data AD Visual Editor
 
 [atc_mi_advertising](atc_mi_interface/atc_mi_advertising.py) is a Python GUI allowing BLE advertisement analysis of data transmitted by thermometers, including a function to edit data and perform testing.
 
@@ -812,7 +812,7 @@ optional arguments:
   -p, --passive         Use BLE passive scanning (default is active scanning)
   -V, --version         Print version and exit
 
-Xiaomi Mijia Thermometer - BLE Advertisement Visual Editor
+Xiaomi Mijia Thermometer - BLE Service Data AD Visual Editor
 ```
 
 Summary of the possible invocation modes:
