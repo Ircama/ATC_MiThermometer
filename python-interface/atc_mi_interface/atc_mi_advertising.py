@@ -56,7 +56,8 @@ class AtcMiConstructFrame(wx.Frame):
             not_local_name_rssi=not_local_name_rssi,
             gallery_descriptor=construct_module,
             col_name_width=200,
-            col_type_width=150)
+            col_type_width=150
+        )
         self.Bind(wx.EVT_CLOSE, self.on_close)
         if maximized:
             self.Maximize(True)
