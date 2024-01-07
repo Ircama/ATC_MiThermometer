@@ -176,8 +176,8 @@ class DecimalNumber(Adapter):
     def __init__(self, subcon, decimal):
         self.decimal = decimal
         super().__init__(subcon)
-        self._decode = lambda obj,ctx,path: obj / self.decimal
-        self._encode = lambda obj,ctx,path: int(float(obj) * self.decimal)
+        self._decode = lambda obj, ctx, path: obj / self.decimal
+        self._encode = lambda obj, ctx, path: int(float(obj) * self.decimal)
 
 
 MacAddress = ExprAdapter(Byte[6],

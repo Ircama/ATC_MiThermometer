@@ -23,8 +23,8 @@ def main():
         size=(int(width * 90 / 100), int(height * 90 / 100))
     )
 
-    ordered_samples = OrderedDict(
-    # ordered_samples OrderedDict for the overall data, independent of the
+    ordered_sample_bin_ref = OrderedDict(
+    # ordered_sample_bin_ref OrderedDict for the overall data, independent of the
     # gallery_descriptor. Notice that if a reference is used "mac_address",
     # reference_label and key_label must be set in ConstructGallery
         [
@@ -247,7 +247,7 @@ def main():
 
     frame.main_panel = ConstructGallery(frame,
         gallery_descriptor=gallery_descriptor,
-        ordered_samples=ordered_samples,
+        ordered_sample_bin_ref=ordered_sample_bin_ref,
         ref_key_descriptor=ref_key_descriptor,
         reference_label="MAC address",
         key_label="Bindkey",

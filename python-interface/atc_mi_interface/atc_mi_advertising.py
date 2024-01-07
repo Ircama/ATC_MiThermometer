@@ -30,7 +30,7 @@ class AtcMiConstructFrame(wx.Frame):
             self,
             *args,
             maximized=False,
-            loadfile=None,
+            load_pickle_file=None,
             auto_ble_start=False,
             bleak_scanner_kwargs={},
             not_local_name_rssi=False,
@@ -51,7 +51,7 @@ class AtcMiConstructFrame(wx.Frame):
             filter_hint_name="LYWSD03MMC, ATC",
             key_label="Bindkey",
             description_label="Description",
-            loadfile=loadfile,
+            load_pickle_file=load_pickle_file,
             auto_ble_start=auto_ble_start,
             not_local_name_rssi=not_local_name_rssi,
             gallery_descriptor=construct_module,
@@ -175,9 +175,9 @@ def main():
     if args.version:
         print(f'atc_mi_advertising version {__version__}')
         sys.exit(0)
-    loadfile = None
+    load_pickle_file = None
     if args.log_data_file:
-        loadfile = args.log_data_file
+        load_pickle_file = args.log_data_file
     if args.inspectable:
         import wx.lib.mixins.inspection as wit
         app = wit.InspectableApp()
@@ -187,7 +187,7 @@ def main():
     frame = AtcMiConstructFrame(
         None,
         maximized=args.maximized,
-        loadfile=loadfile,
+        load_pickle_file=load_pickle_file,
         auto_ble_start=args.auto_ble_start,
         not_local_name_rssi=args.not_local_name_rssi,
         bleak_scanner_kwargs=scanning_mode
