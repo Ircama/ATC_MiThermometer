@@ -18,17 +18,25 @@ custom.add_custom_tunnel(atc_mi_construct.BtHomeV2Codec, "BtHomeV2Codec")
 custom.add_custom_tunnel(atc_mi_construct.AtcMiCodec, "AtcMiCodec")
 custom.add_custom_tunnel(atc_mi_construct.MiLikeCodec, "MiLikeCodec")
 custom.add_custom_adapter(
+    atc_mi_construct.DecimalNumber,
+    "DecimalNumber",
+    custom.AdapterObjEditorType.String
+)
+custom.add_custom_adapter(
     atc_mi_construct.ExprAdapter,
     "Value",
-    custom.AdapterObjEditorType.String)
+    custom.AdapterObjEditorType.String
+)
 custom.add_custom_adapter(
     atc_mi_construct.ReversedMacAddress,
     "ReversedMacAddress",
-    custom.AdapterObjEditorType.String)
+    custom.AdapterObjEditorType.String
+)
 custom.add_custom_adapter(
     atc_mi_construct.MacAddress,
     "MacAddress",
-    custom.AdapterObjEditorType.String)
+    custom.AdapterObjEditorType.String
+)
 
 # Set construct_gallery
 gallery_descriptor = {

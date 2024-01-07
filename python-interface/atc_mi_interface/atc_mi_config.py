@@ -61,9 +61,9 @@ char_dict = {
         [[26], Int8ul, 1, False]  # LYWSD03MMC Battery Level
     ],
     "0000181a-0000-1000-8000-00805f9b34fb": [  # custom format
-        [[30], Int16sl_x10, 2, False],  # Temperature Celsius
-        [[33], Int16sl_x100, 2, False],  # Temperature
-        [[36], Int16ul_x100, 2, False],  # Humidity
+        [[30], DecimalNumber(Int16sl, 10), 2, False],  # Temperature Celsius
+        [[33], DecimalNumber(Int16sl, 100), 2, False],  # Temperature
+        [[36], DecimalNumber(Int16ul, 100), 2, False],  # Humidity
     ],
     "ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6": [  # LYWSD03MMC native format
         [[57], Int8ul, 1, False],  # Batt

@@ -20,6 +20,21 @@ def handle_decrypt_error(descr):  # can be monkey patched
 
 
 class BtHomeCodec(Tunnel):
+    """
+    Uses "bindkey" and "mac_address" parameters in parse() and build():
+
+        <>.parse(
+            bytes,
+            mac_address=b'\xaa\xbb\xcc\xdd\xee\xff',
+            bindkey=b'\xaa\xaa\xaa\xaa\xaa\xaa',
+        )
+
+        <>.build(
+            { ... },
+            mac_address=b'\xaa\xbb\xcc\xdd\xee\xff',
+            bindkey=b'\xaa\xaa\xaa\xaa\xaa\xaa',
+        )
+    """
     def __init__(self, subcon, bindkey=b'', mac_address=b''):
         super().__init__(subcon)
         self.default_bindkey = bindkey
@@ -157,6 +172,14 @@ class MiLikeCodec(BtHomeCodec):
         return ciphertext + count_id + mic
 
 
+class DecimalNumber(Adapter):
+    def __init__(self, subcon, decimal):
+        self.decimal = decimal
+        super().__init__(subcon)
+        self._decode = lambda obj,ctx,path: obj / self.decimal
+        self._encode = lambda obj,ctx,path: int(float(obj) * self.decimal)
+
+
 MacAddress = ExprAdapter(Byte[6],
     decoder = lambda obj, ctx: ":".join("%02x" % b for b in obj).upper(),
     encoder = lambda obj, ctx: bytes.fromhex(re.sub(r'[.:\- ]', '', obj))
@@ -164,42 +187,6 @@ MacAddress = ExprAdapter(Byte[6],
 ReversedMacAddress = ExprAdapter(Byte[6],
     decoder = lambda obj, ctx: ":".join("%02x" % b for b in obj[::-1]).upper(),
     encoder = lambda obj, ctx: bytes.fromhex(re.sub(r'[.:\- ]', '', obj))[::-1]
-)
-Int16ub_x1000 = ExprAdapter(
-    Int16ub, obj_ / 1000, lambda obj, ctx: int(float(obj) * 1000)
-)
-Int16ul_x1000 = ExprAdapter(
-    Int16ul, obj_ / 1000, lambda obj, ctx: int(float(obj) * 1000)
-)
-Int24ul_x1000 = ExprAdapter(
-    Int24ul, obj_ / 1000, lambda obj, ctx: int(float(obj) * 1000)
-)
-Int32ul_x1000 = ExprAdapter(
-    Int32ul, obj_ / 1000, lambda obj, ctx: int(float(obj) * 1000)
-)
-Int16ul_x100 = ExprAdapter(
-    Int16ul, obj_ / 100, lambda obj, ctx: int(float(obj) * 100)
-)
-Int24ul_x100 = ExprAdapter(
-    Int24ul, obj_ / 100, lambda obj, ctx: int(float(obj) * 100)
-)
-Int16sl_x100 = ExprAdapter(
-    Int16sl, obj_ / 100, lambda obj, ctx: int(float(obj) * 100)
-)
-Int16ub_x10 = ExprAdapter(
-    Int16ub, obj_ / 10, lambda obj, ctx: int(float(obj) * 10)
-)
-Int16ul_x10 = ExprAdapter(
-    Int16ul, obj_ / 10, lambda obj, ctx: int(float(obj) * 10)
-)
-Int16sb_x10 = ExprAdapter(
-    Int16sb, obj_ / 10, lambda obj, ctx: int(float(obj) * 10)
-)
-Int16sl_x10 = ExprAdapter(
-    Int16sl, obj_ / 10, lambda obj, ctx: int(float(obj) * 10)
-)
-Int8ul_x10 = ExprAdapter(
-    Int8ul, obj_ / 10, lambda obj, ctx: int(float(obj) * 10)
 )
 
 

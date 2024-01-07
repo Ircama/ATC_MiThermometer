@@ -26,11 +26,11 @@ custom_format = Struct(
     "UUID" / ByteSwapped(Const(b"\x18\x1a")),  # GATT Service 0x181A Environmental Sensing
     "MAC" / ReversedMacAddress,  # [0] - lo, .. [6] - hi digits
     "mac_vendor" / MacVendor,
-    "temperature" / Int16sl_x100,
+    "temperature" / DecimalNumber(Int16sl, 100),
     "temperature_unit" / Computed("°C"),
-    "humidity" / Int16ul_x100,
+    "humidity" / DecimalNumber(Int16ul, 100),
     "humidity_unit" / Computed("%"),
-    "battery_v" / Int16ul_x1000,
+    "battery_v" / DecimalNumber(Int16ul, 1000),
     "battery_v_unit" / Computed("V"),
     "battery_level" / Int8ul,  # 0..100 %
     "battery_level_unit" / Computed("%"),
@@ -48,9 +48,9 @@ custom_enc_format = Struct(
     "UUID" / ByteSwapped(Const(b"\x18\x1a")),  # GATT Service 0x181A Environmental Sensing
     "codec" / AtcMiCodec(
         Struct(
-            "temperature" / Int16sl_x100,
+            "temperature" / DecimalNumber(Int16sl, 100),
             "temperature_unit" / Computed("°C"),
-            "humidity" / Int16ul_x100,
+            "humidity" / DecimalNumber(Int16ul, 100),
             "humidity_unit" / Computed("%"),
             "battery_level" / Int8ul,  # 0..100 %
             "battery_level_unit" / Computed("%"),
@@ -71,13 +71,13 @@ atc1441_format = Struct(
     "UUID" / ByteSwapped(Const(b"\x18\x1a")),  # GATT Service 0x181A Environmental Sensing
     "MAC" / MacAddress,  # [0] - hi, .. [6] - lo digits
     "mac_vendor" / MacVendor,
-    "temperature" / Int16sb_x10,
+    "temperature" / DecimalNumber(Int16sb, 10),
     "temperature_unit" / Computed("°C"),
     "humidity" / Int8ul,  # 0..100 %
     "humidity_unit" / Computed("%"),
     "battery_level" / Int8ul,  # 0..100 %
     "battery_level_unit" / Computed("%"),
-    "battery_v" / Int16ub_x1000,
+    "battery_v" / DecimalNumber(Int16ub, 1000),
     "battery_v_unit" / Computed("V"),
     "counter" / Int8ub  # frame packet counter
 )
@@ -172,7 +172,7 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             ),
             "XIAOMI_DATA_ID_Temperature": Struct(  # 04
                 "type_length" / Const(b"\x02"),
-                "temperature" / Int16sl_x10,
+                "temperature" / DecimalNumber(Int16sl, 10),
                 "temperature_unit" / Computed("°C"),
             ),
             "XIAOMI_DATA_ID_WaterBoil": Struct(  # 05
@@ -182,7 +182,7 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             ),
             "XIAOMI_DATA_ID_Humidity": Struct(  # 06
                 "type_length" / Const(b"\x02"),  # ranging from 0-1000
-                "humidity" / Int16ul_x10,  # 0..100 %
+                "humidity" / DecimalNumber(Int16ul, 10),  # 0..100 %
                 "humidity_unit" / Computed("%"),
             ),
             "XIAOMI_DATA_ID_LightIlluminance": Struct(  # 07
@@ -197,7 +197,7 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             ),
             "XIAOMI_DATA_ID_SoilECvalue": Struct(  # 09, Conductivity
                 "type_length" / Const(b"\x02"),
-                "conductivity" / Int16ul_x10,  # range: 0-5000
+                "conductivity" / DecimalNumber(Int16ul, 10),  # range: 0-5000
                 "conductivity_unit" / Computed("us/cm"),
             ),
             "XIAOMI_DATA_ID_Power": Struct(  # 0A
@@ -207,9 +207,9 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             ),
             "XIAOMI_DATA_ID_TempAndHumidity": Struct(  # 0D
                 "type_length" / Const(b"\x04"),
-                "temperature" / Int16sl_x10,
+                "temperature" / DecimalNumber(Int16sl, 10),
                 "temperature_unit" / Computed("°C"),
-                "humidity" / Int16ul_x10,
+                "humidity" / DecimalNumber(Int16ul, 10),
                 "humidity_unit" / Computed("%"),
             ),
             "XIAOMI_DATA_ID_Lock": Struct(  # 0E
@@ -236,7 +236,7 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             ),
             "XIAOMI_DATA_ID_Formaldehyde": Struct(  # 10
                 "type_length" / Const(b"\x02"),
-                "formaldehyde" / Int16ul_x100,
+                "formaldehyde" / DecimalNumber(Int16ul, 100),
                 "formaldehyde_unit" / Computed("mg/m3"),
             ),
             "XIAOMI_DATA_ID_Bind": Struct(  # 11
@@ -310,13 +310,13 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
             ),
             "XIAOMI_DATA_ID_FormaldehydeNew": Struct(  # 1D
                 "type_length" / Const(b"\x02"),
-                "formaldehyde" / Int16ul_x1000,
+                "formaldehyde" / DecimalNumber(Int16ul, 1000),
                 "formaldehyde_unit" / Computed("mg/m3"),
             ),
             "XIAOMI_DATA_ID_BodyTemperature": Struct(
                 "type_length" / Const(b"\x05"),
-                "skin temperature" / Int16sl_x100,
-                "PCB temperature" / Int16sl_x100,
+                "skin temperature" / DecimalNumber(Int16sl, 100),
+                "PCB temperature" / DecimalNumber(Int16sl, 100),
                 "temperature_unit" / Computed("°C"),
                 "battery_power" / Int8ul,
                 "battery_power_unit" / Computed("%"),
@@ -521,11 +521,11 @@ bt_home_data = Struct(
                     "battery_level_unit" / Computed("%"),
                 ),
                 "BT_HOME_temperature": Struct(
-                    "temperature" / Int16sl_x100,
+                    "temperature" / DecimalNumber(Int16sl, 100),
                     "temperature_unit" / Computed("°C"),
                 ),
                 "BT_HOME_humidity": Struct(
-                    "humidity" / Int16ul_x100,
+                    "humidity" / DecimalNumber(Int16ul, 100),
                     "humidity_unit" / Computed("%"),
                 ),
                 "BT_HOME_humidity_8": Struct(
@@ -533,23 +533,23 @@ bt_home_data = Struct(
                     "humidity_8_unit" / Computed("%"),
                 ),
                 "BT_HOME_pressure": Struct(
-                    "pressure" / Int24ul_x100,
+                    "pressure" / DecimalNumber(Int24ul, 100),
                     "pressure_unit" / Computed("hPa"),
                 ),
                 "BT_HOME_illuminance": Struct(
-                    "illuminance" / Int24ul_x100,
+                    "illuminance" / DecimalNumber(Int24ul, 100),
                     "illuminance_unit" / Computed("lux"),
                 ),
                 "BT_HOME_weight": Struct(
-                    "weight" / Int16ul_x100,
+                    "weight" / DecimalNumber(Int16ul, 100),
                     "weight_unit" / Computed("kg"),
                 ),
                 "BT_HOME_weight_lb": Struct(
-                    "weight_lb" / Int16ul_x100,
+                    "weight_lb" / DecimalNumber(Int16ul, 100),
                     "weight_lb_unit" / Computed("lb"),
                 ),
                 "BT_HOME_dewpoint": Struct(
-                    "dewpoint" / Int16sl_x100,
+                    "dewpoint" / DecimalNumber(Int16sl, 100),
                     "dewpoint_unit" / Computed("°C"),
                 ),
                 "BT_HOME_count_i": Struct(
@@ -565,15 +565,15 @@ bt_home_data = Struct(
                     "count_l" / Int32ul,  # integer (0..4294967295)
                 ),
                 "BT_HOME_energy": Struct(
-                    "energy" / Int24ul_x1000,
+                    "energy" / DecimalNumber(Int24ul, 1000),
                     "energy_unit" / Computed("kWh"),
                 ),
                 "BT_HOME_power": Struct(
-                    "power" / Int24ul_x100,
+                    "power" / DecimalNumber(Int24ul, 100),
                     "power_unit" / Computed("W"),
                 ),
                 "BT_HOME_voltage": Struct(
-                    "battery_v" / Int16ul_x1000,
+                    "battery_v" / DecimalNumber(Int16ul, 1000),
                     "battery_v_unit" / Computed("V"),
                 ),
                 "BT_HOME_pm2x5": Struct(
@@ -593,7 +593,7 @@ bt_home_data = Struct(
                     "tvoc_unit" / Computed("ug/m3"),
                 ),
                 "BT_HOME_moisture": Struct(
-                    "moisture" / Int16ul_x100,
+                    "moisture" / DecimalNumber(Int16ul, 100),
                     "moisture_unit" / Computed("%"),
                 ),
                 "BT_HOME_moisture_8": Struct(
@@ -609,11 +609,11 @@ bt_home_data = Struct(
                     )
                 ),
                 "BT_HOME_acceleration": Struct(
-                    "acceleration" / Int16ul_x1000,
+                    "acceleration" / DecimalNumber(Int16ul, 1000),
                     "acceleration_unit" / Computed("m/s²"),
                 ),
                 "BT_HOME_gyroscope": Struct(
-                    "gyroscope" / Int16ul_x1000,
+                    "gyroscope" / DecimalNumber(Int16ul, 1000),
                     "gyroscope_unit" / Computed("°/s"),
                 ),
                 "BT_HOME_boolean": BitStruct(
@@ -873,43 +873,43 @@ bt_home_v2_data = Struct(
                 "counter32" / Int32ul,  # integer (0..4294967295)
             ),
             "BtHomeID_voltage": Struct(
-                "battery_v" / Int16ul_x1000,
+                "battery_v" / DecimalNumber(Int16ul, 1000),
                 "battery_v_unit" / Computed("V"),
             ),
             "BtHomeID_voltage_01": Struct(
-                "battery_v" / Int16ul_x10,
+                "battery_v" / DecimalNumber(Int16ul, 10),
                 "battery_v_unit" / Computed("V"),
             ),
             "BtHomeID_temperature": Struct(
-                "temperature" / Int16sl_x100,
+                "temperature" / DecimalNumber(Int16sl, 100),
                 "temperature_unit" / Computed("°C"),
             ),
             "BtHomeID_temperature_01": Struct(
-                "temperature" / Int16sl_x10,
+                "temperature" / DecimalNumber(Int16sl, 10),
                 "temperature_unit" / Computed("°C"),
             ),
             "BtHomeID_humidity": Struct(
-                "humidity" / Int16ul_x100,
+                "humidity" / DecimalNumber(Int16ul, 100),
                 "humidity_unit" / Computed("%"),
             ),
             "BtHomeID_pressure": Struct(
-                "pressure" / Int24ul_x100,
+                "pressure" / DecimalNumber(Int24ul, 100),
                 "pressure_unit" / Computed("hPa"),
             ),
             "BtHomeID_illuminance": Struct(
-                "illuminance" / Int24ul_x100,
+                "illuminance" / DecimalNumber(Int24ul, 100),
                 "illuminance_unit" / Computed("lux"),
             ),
             "BtHomeID_weight": Struct(
-                "weight" / Int16ul_x100,
+                "weight" / DecimalNumber(Int16ul, 100),
                 "weight_unit" / Computed("kg"),
             ),
             "BtHomeID_weight_lb": Struct(
-                "weight_lb" / Int16ul_x100,
+                "weight_lb" / DecimalNumber(Int16ul, 100),
                 "weight_lb_unit" / Computed("lb"),
             ),
             "BtHomeID_dewpoint": Struct(
-                "dewpoint" / Int16sl_x100,
+                "dewpoint" / DecimalNumber(Int16sl, 100),
                 "dewpoint_unit" / Computed("°C"),
             ),
             "BtHomeID_humidity8": Struct(
@@ -921,15 +921,15 @@ bt_home_v2_data = Struct(
                 "battery_level_unit" / Computed("%"),
             ),
             "BtHomeID_energy24": Struct(
-                "energy24" / Int24ul_x1000,  # 0..1000 %
+                "energy24" / DecimalNumber(Int24ul, 1000),  # 0..1000 %
                 "energy24_unit" / Computed("kWh"),
             ),
             "BtHomeID_energy32": Struct(
-                "energy32" / Int32ul_x1000,  # 0..1000 %
+                "energy32" / DecimalNumber(Int32ul, 1000),  # 0..1000 %
                 "energy32_unit" / Computed("kWh"),
             ),
             "BtHomeID_power24": Struct(
-                "power24" / Int24ul_x100,  # 0..100 %
+                "power24" / DecimalNumber(Int24ul, 100),  # 0..100 %
                 "power24_unit" / Computed("W"),
             ),
             "BtHomeID_pm2x5": Struct(
@@ -949,11 +949,11 @@ bt_home_v2_data = Struct(
                 "tvoc_unit" / Computed("ug/m3"),
             ),
             "BtHomeID_acceleration": Struct(
-                "acceleration" / Int16ul_x1000,
+                "acceleration" / DecimalNumber(Int16ul, 1000),
                 "acceleration_unit" / Computed("m/s²"),
             ),
             "BtHomeID_current": Struct(
-                "current" / Int16ul_x1000,
+                "current" / DecimalNumber(Int16ul, 1000),
                 "current_unit" / Computed("A"),
             ),
             "BtHomeID_distance_mm": Struct(
@@ -961,27 +961,27 @@ bt_home_v2_data = Struct(
                 "distance_mm_unit" / Computed("mm"),
             ),
             "BtHomeID_distance_m": Struct(
-                "distance_m" / Int16ul_x10,
+                "distance_m" / DecimalNumber(Int16ul, 10),
                 "distance_m_unit" / Computed("m"),
             ),
             "BtHomeID_duration": Struct(
-                "duration" / Int24ul_x1000,
+                "duration" / DecimalNumber(Int24ul, 1000),
                 "duration_unit" / Computed("s"),
             ),
             "BtHomeID_gas24": Struct(
-                "gas24" / Int24ul_x1000,
+                "gas24" / DecimalNumber(Int24ul, 1000),
                 "gas24_unit" / Computed("m3"),
             ),
             "BtHomeID_gas32": Struct(
-                "gas32" / Int32ul_x1000,
+                "gas32" / DecimalNumber(Int32ul, 1000),
                 "gas32_unit" / Computed("m3"),
             ),
             "BtHomeID_gyroscope": Struct(
-                "gyroscope" / Int16ul_x1000,
+                "gyroscope" / DecimalNumber(Int16ul, 1000),
                 "gyroscope_unit" / Computed("°/s"),
             ),
             "BtHomeID_moisture16": Struct(
-                "moisture16" / Int16ul_x100,
+                "moisture16" / DecimalNumber(Int16ul, 100),
                 "moisture16_unit" / Computed("%"),
             ),
             "BtHomeID_moisture8": Struct(
@@ -995,11 +995,11 @@ bt_home_v2_data = Struct(
                 "text" / PascalString(VarInt, "utf8"),
             ),
             "BtHomeID_rotation": Struct(
-                "rotation" / Int16sl_x10,
+                "rotation" / DecimalNumber(Int16sl, 10),
                 "rotation_unit" / Computed("°"),
             ),
             "BtHomeID_speed": Struct(
-                "speed" / Int16ul_x100,
+                "speed" / DecimalNumber(Int16ul, 100),
                 "speed_unit" / Computed("m/s"),
             ),
             "BtHomeID_timestamp": Struct(
@@ -1011,7 +1011,7 @@ bt_home_v2_data = Struct(
                 )
             ),
             "BtHomeID_volume16_01": Struct(
-                "volume16_01" / Int16ul_x10,
+                "volume16_01" / DecimalNumber(Int16ul, 10),
                 "volume16_01_unit" / Computed("l"),
             ),
             "BtHomeID_volume16": Struct(
@@ -1019,19 +1019,19 @@ bt_home_v2_data = Struct(
                 "volume16_unit" / Computed("ml"),
             ),
             "BtHomeID_volume32": Struct(
-                "volume32" / Int32ul_x1000,
+                "volume32" / DecimalNumber(Int32ul, 1000),
                 "volume32_unit" / Computed("l"),
             ),
             "BtHomeID_Flow_Rate": Struct(
-                "Flow_Rate" / Int16ul_x1000,
+                "Flow_Rate" / DecimalNumber(Int16ul, 1000),
                 "Flow_Rate_unit" / Computed("m3/hr"),
             ),
             "BtHomeID_UV_index": Struct(
-                "UV_index" / Int8ul_x10,
+                "UV_index" / DecimalNumber(Int8ul, 10),
                 "UV_index_unit" / Computed("UV Index"),
             ),
             "BtHomeID_water32": Struct(
-                "water32" / Int32ul_x1000,
+                "water32" / DecimalNumber(Int32ul, 1000),
                 "water32_unit" / Computed("l"),
             ),
             "BtHomeID_boolean": BitStruct(
@@ -1212,19 +1212,19 @@ general_format = Struct(
 # BLE client connection, characteristic id 53 (Temperature and Humidity):
 native_temp_hum_v_values = Struct(
     "version" / Computed(1),
-    "temperature" / Int16sl_x100,
+    "temperature" / DecimalNumber(Int16sl, 100),
     "temperature_unit" / Computed("°C"),
     "humidity" / Int8ul,  # 0..100 %
     "humidity_unit" / Computed("%"),
-    "battery_v" / Int16ul_x1000,
+    "battery_v" / DecimalNumber(Int16ul, 1000),
     "battery_v_unit" / Computed("V"),
 )
 
 # BLE client connection, characteristic id 66 (comfortable temp and humi):
 native_comfort_values = Struct(
     "version" / Computed(2),
-    "temperature_high" / Int16sl_x100,
-    "temperature_low" / Int16sl_x100,
+    "temperature_high" / DecimalNumber(Int16sl, 100),
+    "temperature_low" / DecimalNumber(Int16sl, 100),
     "temperature_unit" / Computed("°C"),
     "humidity_high" / Int8ul,  # 0..100 %
     "humidity_low" / Int8ul,  # 0..100 %
@@ -1373,20 +1373,20 @@ cfg = Struct(
 
 comfort_values = Struct(
     "version" / Computed(1),
-    "temperature_low" / Int16sl_x100,
-    "temperature_high" / Int16sl_x100,
+    "temperature_low" / DecimalNumber(Int16sl, 100),
+    "temperature_high" / DecimalNumber(Int16sl, 100),
     "temperature_unit" / Computed("°C"),
-    "humidity_low" / Int16ul_x100,  # 0..100 %
-    "humidity_high" / Int16ul_x100,  # 0..100 %
+    "humidity_low" / DecimalNumber(Int16ul, 100),  # 0..100 %
+    "humidity_high" / DecimalNumber(Int16ul, 100),  # 0..100 %
     "humidity_unit" / Computed("%"),
 )
 
 trigger = Struct(
     "version" / Computed(1),
-    "temp_threshold" / Int16sl_x100,  # x0.01°, Set temp threshold
-    "humi_threshold" / Int16ul_x100,  # x0.01%, Set humi threshold
-    "temp_hysteresis" / Int16sl_x100,  # Set temp hysteresis, -327.67..327.67 °
-    "humi_hysteresis" / Int16ul_x100,  # Set humi hysteresis, -327.67..327.67 %
+    "temp_threshold" / DecimalNumber(Int16sl, 100),  # x0.01°, Set temp threshold
+    "humi_threshold" / DecimalNumber(Int16ul, 100),  # x0.01%, Set humi threshold
+    "temp_hysteresis" / DecimalNumber(Int16sl, 100),  # Set temp hysteresis, -327.67..327.67 °
+    "humi_hysteresis" / DecimalNumber(Int16ul, 100),  # Set humi hysteresis, -327.67..327.67 %
     "temperature_unit" / Computed("°C"),
     "humidity_unit" / Computed("%"),
     "rds_time_report" / Int16ul,  # Reed switch count report interval (sec)
