@@ -1,3 +1,4 @@
+#coding=utf-8
 #############################################################################
 # atc_mi_construct.py
 #############################################################################
@@ -505,14 +506,14 @@ bt_home_data = Struct(
         # where nn is the two-digit decimal length of the text, 00..30 bytes.
         # When building, a smaller string is padded with null bytes.
         **{
-            f"{t}{i:02d}": ((i + 1) << 8) + n
+            "{}{:02d}".format(t, i): ((i + 1) << 8) + n
             for t, n in [("BT_HOME_text_", 0x53), ("BT_HOME_raw_", 0x54)]
             for i in range(31)
         }
     ),
     "data" / Switch(this.bt_home_type,
-        {
-            **{  # first dictionary
+        dict_union(
+            {  # first dictionary
                 "BT_HOME_packet_id": Struct(
                     "packet_id" / Int8ul,  # integer (0..255)
                 ),
@@ -729,12 +730,12 @@ bt_home_data = Struct(
                     "window_open" / Flag,
                 ),
             },
-            **{  # merge this second dictionary with syntax suitable to Python 3.5+
-                f"{t}{i:02d}": PaddedString(i, "utf8")
+            {
+                "{}{:02d}".format(t, i): PaddedString(i, "utf8")
                 for t in ["BT_HOME_text_", "BT_HOME_raw_"]
                 for i in range(31)
             }
-        }
+        )
     )
 )
 

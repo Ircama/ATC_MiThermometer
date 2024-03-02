@@ -3,6 +3,7 @@
 from construct import *  # pip3 install construct
 from Crypto.Cipher import AES  # pip3 install pycryptodome
 import re
+from itertools import chain
 
 MacVendor = Switch(
     this.MAC[:9],
@@ -14,6 +15,9 @@ MacVendor = Switch(
     default=Computed("Unknown vendor"),
 )
 
+
+def dict_union(*args):
+    return dict(chain.from_iterable(d.items() for d in args))
 
 def handle_decrypt_error(descr):  # can be monkey patched
     raise ValueError(descr)
@@ -176,7 +180,7 @@ class DecimalNumber(Adapter):
     def __init__(self, subcon, decimal):
         self.decimal = decimal
         super().__init__(subcon)
-        self._decode = lambda obj, ctx, path: obj / self.decimal
+        self._decode = lambda obj, ctx, path: float(obj) / self.decimal
         self._encode = lambda obj, ctx, path: int(float(obj) * self.decimal)
 
 
