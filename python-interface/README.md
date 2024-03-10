@@ -168,7 +168,7 @@ Parsing a [*custom* frame](https://github.com/pvvx/ATC_MiThermometer#custom-form
 ```python
 from atc_mi_interface import general_format
 print(general_format.parse(bytes.fromhex(
-    "12 16 1a 18 5c c8 ee 38 c1 a4 b0 08 c3 14 ca 0a 50 14 05")))
+    "1a 18 5c c8 ee 38 c1 a4 b0 08 c3 14 ca 0a 50 14 05")))
 ```
 
 Output:
@@ -180,7 +180,6 @@ Container:
     custom_format = ListContainer:
         Container:
             version = 1
-            size = 18
             uid = 22
             UUID = b"\x18\x1a" (total 2)
             MAC = u"A4:C1:38:EE:C8:5C" (total 17)
@@ -213,7 +212,7 @@ The following example shows how to parse any type of format (*custom*, *atc1441*
 ```python
 from atc_mi_interface import general_format
 
-frame1 = bytes.fromhex("12 16 1a 18 cc bb aa 38 c1 a4 77 07 88 13 ca 0a 50 01 07")
+frame1 = bytes.fromhex("1a 18 cc bb aa 38 c1 a4 77 07 88 13 ca 0a 50 01 07")
 
 atc_mi_data = general_format.parse(frame1)
 
@@ -224,7 +223,7 @@ print("battery_v:", atc_mi_data.search_all("^battery_v"))
 
 print()
 
-frame2 = bytes.fromhex("16 16 1e 18 ec 12 cf e5 00 00 3a f3 95 3c a0 5a 7d 03 00 2a ea f8 ea")
+frame2 = bytes.fromhex("1e 18 ec 12 cf e5 00 00 3a f3 95 3c a0 5a 7d 03 00 2a ea f8 ea")
 bindkey = bytes.fromhex("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 mac_address = bytes.fromhex("A4:C1:38:AA:BB:CC".replace(":", ""))
 
@@ -259,7 +258,6 @@ from atc_mi_interface import custom_format
 
 custom_format.build(
     {
-        "size": 18,
         "uid": 22,
         "UUID": b"\x18\x1a",
         "MAC": "A4:C1:38:AA:BB:CC",
@@ -282,7 +280,7 @@ custom_format.build(
 Output:
 
 ```
-"12 16 1a 18 cc bb aa 38 c1 a4 77 07 88 13 ca 0a 50 01 07"
+"1a 18 cc bb aa 38 c1 a4 77 07 88 13 ca 0a 50 01 07"
 ```
 
 ## Encrypting and decrypting
@@ -313,7 +311,7 @@ from atc_mi_interface import general_format
 
 print(
     general_format.parse(
-        bytes.fromhex("0e 16 1a 18 bd 9d c5 4e fa b5 00 0e 8b b8 07"),
+        bytes.fromhex("1a 18 bd 9d c5 4e fa b5 00 0e 8b b8 07"),
         mac_address=bytes.fromhex("A4:C1:38:AA:BB:CC".replace(":", "")),
         bindkey=bytes.fromhex("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
     )
@@ -328,7 +326,6 @@ Container:
     custom_enc_format = ListContainer:
         Container:
             version = 1
-            size = 14
             uid = 22
             UUID = b"\x18\x1a" (total 2)
             codec = Container:
@@ -360,7 +357,6 @@ from atc_mi_interface import custom_enc_format
 
 custom_enc_format.build(
     {
-        "size": 14,
         "uid": 22,
         "UUID": b"\x18\x1a",
         "codec": {
@@ -385,7 +381,7 @@ custom_enc_format.build(
 Output:
 
 ```
-"0e 16 1a 18 bd 9d c5 4e fa b8 08 56 6b e8 7f"
+"1a 18 bd 9d c5 4e fa b8 08 56 6b e8 7f"
 ```
 
 For the build process, generally `Container` is mapped to a dictionary (`{ ... }`), `ListContainer` to a list (`[ ... ]`) and `(enum)` with a normal `key: value` inside a dictionary (with the strings in quotes).
@@ -397,7 +393,7 @@ from atc_mi_interface import bt_home_v2_format
 
 print(
     bt_home_v2_format.parse(
-        bytes.fromhex("14 16 d2 fc 41 95 b0 ef da 78 9d d9 53 b0 26 00 00 93 41 62 6f"),
+        bytes.fromhex("d2 fc 41 95 b0 ef da 78 9d d9 53 b0 26 00 00 93 41 62 6f"),
         mac_address=bytes.fromhex("A4:C1:38:AA:BB:CC".replace(":", "")),
         bindkey=bytes.fromhex("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
     )
@@ -409,7 +405,6 @@ Output:
 ```python
 Container:
     version = 1
-    size = 20
     uid = 22
     UUID = b"\xfc\xd2" (total 2)
     DevInfo = Container:
@@ -445,7 +440,6 @@ from atc_mi_interface import bt_home_v2_format
 
 bt_home_v2_format.build(
     {
-        "size": 20,
         "uid": 22,
         "UUID": b"\xfc\xd2",
         "DevInfo": {
@@ -481,7 +475,7 @@ bt_home_v2_format.build(
 Output:
 
 ```
-"14 16 d2 fc 41 95 b0 ef da 78 9d d9 53 b0 26 00 00 93 41 62 6f"
+"d2 fc 41 95 b0 ef da 78 9d d9 53 b0 26 00 00 93 41 62 6f"
 ```
 
 ## Reading and updating single values

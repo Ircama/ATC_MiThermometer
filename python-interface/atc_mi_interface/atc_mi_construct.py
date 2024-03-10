@@ -5,6 +5,8 @@
 
 from .atc_mi_construct_adapters import *
 
+# For all formats, "uid"= BLE classifier - Common Data Type = 0x16=22=Service Data, 16-bit UUID follows https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile
+
 # -------------- custom_format -------------------------------------------------
 # "PVVX (Custom)" advertising type, encrypted beacon unchecked
 
@@ -21,9 +23,7 @@ atc_flag = BitStruct(  # GPIO_TRG pin (marking "reset" on circuit board) flags:
 )
 
 custom_format = Struct(
-    "version" / Computed(1),
-    "size" / Int8ul,  # 18 (0x12)
-    "uid" / Int8ul,  # BLE classifier - Common Data Type; 0x16=22=Service Data, 16-bit UUID follows https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
+    "version" / Computed(2),
     "UUID" / ByteSwapped(Const(b"\x18\x1a")),  # GATT Service 0x181A Environmental Sensing
     "MAC" / ReversedMacAddress,  # [0] - lo, .. [6] - hi digits
     "mac_vendor" / MacVendor,
@@ -43,9 +43,7 @@ custom_format = Struct(
 # "PVVX (Custom)" advertising type, encrypted beacon checked
 
 custom_enc_format = Struct(
-    "version" / Computed(1),
-    "size" / Int8ul,  # 14 (0x0e)
-    "uid" / Int8ul,  # BLE classifier - Common Data Type; 0x16=22=Service Data, 16-bit UUID follows https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
+    "version" / Computed(2),
     "UUID" / ByteSwapped(Const(b"\x18\x1a")),  # GATT Service 0x181A Environmental Sensing
     "codec" / AtcMiCodec(
         Struct(
@@ -66,9 +64,7 @@ custom_enc_format = Struct(
 # https://github.com/pvvx/ATC_MiThermometer#atc1441-format
 
 atc1441_format = Struct(
-    "version" / Computed(1),
-    "size" / Int8ul,  # 18
-    "uid" / Int8ul,  # BLE classifier - Common Data Type; 0x16=22=Service Data, 16-bit UUID follows https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
+    "version" / Computed(2),
     "UUID" / ByteSwapped(Const(b"\x18\x1a")),  # GATT Service 0x181A Environmental Sensing
     "MAC" / MacAddress,  # [0] - hi, .. [6] - lo digits
     "mac_vendor" / MacVendor,
@@ -90,9 +86,7 @@ atc1441_format = Struct(
 # https://github.com/pvvx/ATC_MiThermometer/issues/94#issuecomment-842846036
 
 atc1441_enc_format = Struct(
-    "version" / Computed(1),
-    "size" / Int8ul,  # 14 (0x0e)
-    "uid" / Int8ul,  # BLE classifier - Common Data Type; 0x16=22=Service Data, 16-bit UUID follows https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
+    "version" / Computed(2),
     "UUID" / ByteSwapped(Const(b"\x18\x1a")),  # GATT Service 0x181A Environmental Sensing
     "codec" / AtcMiCodec(
         Struct(
@@ -382,9 +376,7 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
 )
 
 mi_like_format = Struct(
-    "version" / Computed(2),
-    "size" / Int8ul,  # e.g., 21
-    "uid" / Int8ul,  # BLE classifier - Common Data Type; 0x16=22=Service Data, 16-bit UUID follows https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
+    "version" / Computed(3),
     "UUID" / ByteSwapped(Const(b"\xfe\x95")),  # 16-bit UUID for Members 0xFE95 Xiaomi Inc.
     "ctrl" / BitStruct(  # Frame Control (https://github.com/pvvx/ATC_MiThermometer/blob/master/src/mi_beacon.h#L104-L124)
         "Mesh" / Flag,  # 0: does not include Mesh; 1: includes Mesh. For standard BLE access products and high security level access, this item is mandatory to 0. This item is mandatory for Mesh access to 1. For more information about Mesh access, please refer to Mesh related documents
@@ -743,9 +735,7 @@ bt_home_data = Struct(
 # https://github.com/custom-components/ble_monitor/issues/548
 
 bt_home_format = Struct(  # V1 simplified formatting
-    "version" / Computed(1),
-    "size" / Int8ul,
-    "uid" / Int8ul,  # BLE classifier - Common Data Type; 0x16=22=Service Data, 16-bit UUID follows https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
+    "version" / Computed(2),
     "UUID" / ByteSwapped(Const(b"\x18\x1c")),  # BT_HOME_GATT, SERVICE_UUID_USER_DATA, HA_BLE, no security
     "bt_home_data" / GreedyRange(bt_home_data)
 )
@@ -754,9 +744,7 @@ bt_home_format = Struct(  # V1 simplified formatting
 # BTHome v1, encrypted advertising type. https://bthome.io/v1/
 
 bt_home_enc_format = Struct(  # Simplified formatting
-    "version" / Computed(1),
-    "size" / Int8ul,
-    "uid" / Int8ul,  # BLE classifier - Common Data Type; 0x16=22=Service Data, 16-bit UUID follows https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
+    "version" / Computed(2),
     "UUID" / ByteSwapped(Const(b"\x18\x1e")),  # Bond Management Service
     "codec" / BtHomeCodec(
         Struct(
@@ -1169,9 +1157,7 @@ bt_home_v2_data = Struct(
 )
 
 bt_home_v2_format = Struct(  # https://bthome.io/format/
-    "version" / Computed(1),
-    "size" / Int8ul,  # examples: 0B or 0E
-    "uid" / Int8ul,  # 0x16
+    "version" / Computed(2),
     "UUID" / ByteSwapped(Const(b"\xfc\xd2")),  # BTHomeV2
     "DevInfo" / BitStruct(
         "Version" / BitsInteger(3),  # Version number (currently v2)
@@ -1197,7 +1183,7 @@ bt_home_v2_format = Struct(  # https://bthome.io/format/
 # All format types are embraced
 
 general_format = Struct(
-    "version" / Computed(1),
+    "version" / Computed(2),
     "custom_enc_format" / GreedyRange(custom_enc_format),
     "custom_format" / GreedyRange(custom_format),
     "atc1441_enc_format" / GreedyRange(atc1441_enc_format),
