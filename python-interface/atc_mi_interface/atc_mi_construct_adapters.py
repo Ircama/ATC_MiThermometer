@@ -183,15 +183,19 @@ class DecimalNumber(Adapter):
         self._encode = lambda obj, ctx, path: int(float(obj) * self.decimal)
 
 
-MacAddress = ExprAdapter(Byte[6],
-    decoder = lambda obj, ctx: ":".join("%02x" % b for b in obj).upper(),
-    encoder = lambda obj, ctx: bytes.fromhex(re.sub(r'[.:\- ]', '', obj))
-)
-ReversedMacAddress = ExprAdapter(Byte[6],
-    decoder = lambda obj, ctx: ":".join("%02x" % b for b in obj[::-1]).upper(),
-    encoder = lambda obj, ctx: bytes.fromhex(re.sub(r'[.:\- ]', '', obj))[::-1]
-)
+class MacAdapter(Adapter):
+    def __init__(self, separator=':', reverse=False):
+        Adapter.__init__(self, Byte[6])
+        self._decode = lambda obj, ctx, path: separator.join(
+            "%02x" % b for b in obj[::-1 if reverse else 1]
+        ).upper()
+        self._encode = lambda obj, ctx, path: bytearray.fromhex(
+            re.sub(r'[.:\- ]', '', obj)
+        )[::-1 if reverse else 1]
 
+
+MacAddress = MacAdapter()
+ReversedMacAddress = MacAdapter(reverse=True)
 
 def normalize_report(report):
     report = re.sub(r"\n\s*Container:\n?", "\n", report, flags=re.DOTALL)
