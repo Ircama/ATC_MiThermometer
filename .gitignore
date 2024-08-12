@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .idea/
+tests/
 # generated output
 out/*
 python-interface/atc_mi_interface.egg-info/*
