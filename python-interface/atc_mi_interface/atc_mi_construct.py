@@ -34,6 +34,10 @@ custom_format = Struct(
     "battery_v_unit" / Computed("V"),
     "battery_level" / Int8ul,  # 0..100 %
     "battery_level_unit" / Computed("%"),
+    "absolute_humidity" / Computed(
+        lambda this: absolute_humidity(this.temperature, this.humidity)
+    ),
+    "absolute_humidity_unit" / Computed("g/m³"),
     "counter" / Int8ul,  # measurement count
     "flags" / atc_flag
 )
@@ -54,6 +58,10 @@ custom_enc_format = Struct(
             "humidity_unit" / Computed("%"),
             "battery_level" / Int8ul,  # 0..100 %
             "battery_level_unit" / Computed("%"),
+            "absolute_humidity" / Computed(
+                lambda this: absolute_humidity(this.temperature, this.humidity)
+            ),
+            "absolute_humidity_unit" / Computed("g/m³"),
             "flags" / atc_flag
         )
     ),
@@ -79,7 +87,11 @@ atc1441_format = Struct(
     "battery_level_unit" / Computed("%"),
     "battery_v" / Int16ub_x1000,
     "battery_v_unit" / Computed("V"),
-    "counter" / Int8ub  # frame packet counter
+    "counter" / Int8ub,  # frame packet counter
+    "absolute_humidity" / Computed(
+        lambda this: absolute_humidity(this.temperature, this.humidity)
+    ),
+    "absolute_humidity_unit" / Computed("g/m³"),
 )
 
 # -------------- atc1441_enc_format ------------------------------------------------
@@ -105,7 +117,11 @@ atc1441_enc_format = Struct(
                 "out_gpio_trg_flag" / Flag,  # If this flag is set, the output GPIO_TRG pin is controlled according to the set parameters threshold temperature or humidity
                 "battery_level" / BitsInteger(7),  # 0..100 %
                 "battery_level_unit" / Computed("%"),
-            )
+            ),
+            "absolute_humidity" / Computed(
+                lambda this: absolute_humidity(this.temperature, this.humidity)
+            ),
+            "absolute_humidity_unit" / Computed("g/m³"),
         )
     ),
 )
@@ -177,6 +193,11 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
                 "temperature_unit" / Computed("°C"),
                 "humidity" / Int16ul_x10,
                 "humidity_unit" / Computed("%"),
+                "absolute_humidity" / Computed(lambda this: absolute_humidity(
+                        this.temperature,
+                        this.humidity
+                    )),
+                "absolute_humidity_unit" / Computed("g/m³"),
             ),
             "XIAOMI_DATA_ID_SoilMoisture": Struct(  # 08
                 "type_length" / Const(b"\x01"),
@@ -574,6 +595,10 @@ native_temp_hum_v_values = Struct(
     "humidity_unit" / Computed("%"),
     "battery_v" / Int16ul_x1000,
     "battery_v_unit" / Computed("V"),
+    "absolute_humidity" / Computed(
+        lambda this: absolute_humidity(this.temperature, this.humidity)
+    ),
+    "absolute_humidity_unit" / Computed("g/m³"),
 )
 
 # BLE client connection, characteristic id 66 (comfortable temp and humi):

@@ -1,8 +1,9 @@
 # Library module used by atc_mi_construct.py
 
+import re
+import math
 from construct import *  # pip3 install construct
 from Crypto.Cipher import AES  # pip3 install pycryptodome
-import re
 
 MacVendor = Switch(
     this.MAC[:9],
@@ -216,3 +217,21 @@ def normalize_report(report):
     report = re.sub(r"unhexlify\('([A-Fa-f0-9]*)'\)",
         lambda m: f"    {m.group(1).upper()}", report, flags=re.DOTALL)
     return report
+
+
+def absolute_humidity(temp_celsius, relative_humidity):
+    """
+    Calculate the absolute humidity in g/m³.
+
+    Parameters:
+    temp_celsius (float): Temperature in degrees Celsius.
+    relative_humidity (float): Relative humidity in percentage (0-100).
+
+    Returns:
+    float: Absolute humidity in g/m³.
+    """
+    return (
+        2.1674 * 6.112 * math.exp(
+            (17.67 * temp_celsius) / (temp_celsius + 243.5)
+        ) * relative_humidity
+    ) / (temp_celsius + 273.15)
