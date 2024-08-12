@@ -40,7 +40,7 @@ class BtHomeCodec(Tunnel):
         )
     """
     def __init__(self, subcon, bindkey=b'', mac_address=b''):
-        super().__init__(subcon)
+        super(Tunnel, self).__init__(subcon)
         self.default_bindkey = bindkey
         self.def_mac = mac_address
 
@@ -133,9 +133,11 @@ class AtcMiCodec(BtHomeCodec):
         payload = bytes(obj)[1:]
         cipherpayload = payload[:-4]
         header_bytes = (
-            bytes([len(obj) + 3]) + b'\x16' + ctx._subcons.UUID.build(ctx.UUID)
+            bytearray([len(obj) + 3])
+            + b'\x16'
+            + ctx._subcons.UUID.build(ctx.UUID)
         )  # b'\x0e\x16\x1a\x18' (custom_enc) or b'\x0b\x16\x1a\x18' (atc1441_enc)
-        nonce = mac[::-1] + header_bytes + bytes([obj[0]])
+        nonce = mac[::-1] + header_bytes + bytearray([obj[0]])
         mic = payload[-4:]
         msg = self.decrypt(ctx, nonce, cipherpayload, mic, update=b"\x11")
         return msg
@@ -143,7 +145,9 @@ class AtcMiCodec(BtHomeCodec):
     def _encode(self, obj, ctx, path):
         mac = self.mac(ctx, "encode")
         header_bytes = (
-            bytes([len(obj) + 8]) + b'\x16' + ctx._subcons.UUID.build(ctx.UUID)
+            bytearray([len(obj) + 8])
+            + b'\x16'
+            + ctx._subcons.UUID.build(ctx.UUID)
         ) + b'\xbd'  # b'\x0e\x16\x1a\x18\xbd' (custom_enc) or b'\x0b\x16\x1a\x18\xbd' (atc1441_enc)
         nonce = mac[::-1] + header_bytes
         ciphertext, mic = self.encrypt(ctx, nonce, obj, update=b"\x11")
@@ -178,14 +182,14 @@ class MiLikeCodec(BtHomeCodec):
 class DecimalNumber(Adapter):
     def __init__(self, subcon, decimal):
         self.decimal = decimal
-        super().__init__(subcon)
+        super(Adapter, self).__init__(subcon)
         self._decode = lambda obj, ctx, path: float(obj) / self.decimal
         self._encode = lambda obj, ctx, path: int(float(obj) * self.decimal)
 
 
-class MacAdapter(Adapter):
-    def __init__(self, separator=':', reverse=False):
-        Adapter.__init__(self, Byte[6])
+class ByteAdapter(Adapter):
+    def __init__(self, nbytes=6, separator=':', reverse=False):
+        Adapter.__init__(self, Byte[nbytes])
         self._decode = lambda obj, ctx, path: separator.join(
             "%02x" % b for b in obj[::-1 if reverse else 1]
         ).upper()
@@ -194,8 +198,8 @@ class MacAdapter(Adapter):
         )[::-1 if reverse else 1]
 
 
-MacAddress = MacAdapter()
-ReversedMacAddress = MacAdapter(reverse=True)
+MacAddress = ByteAdapter()
+ReversedMacAddress = ByteAdapter(reverse=True)
 
 def normalize_report(report):
     report = re.sub(r"\n\s*Container:\n?", "\n", report, flags=re.DOTALL)
@@ -207,5 +211,6 @@ def normalize_report(report):
     report = re.sub(
         r'hexundump\("""\n(.*)\n"""\)\n', "\g<1>", report, flags=re.DOTALL)
     report = re.sub(r"unhexlify\('([A-Fa-f0-9]*)'\)",
-        lambda m: f"    {m.group(1).upper()}", report, flags=re.DOTALL)
+        lambda m: "    %s" % m.group(1).upper(), report, flags=re.DOTALL
+    )
     return report
