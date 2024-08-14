@@ -1,9 +1,10 @@
 # Library module used by atc_mi_construct.py
 
+import re
+import math
+from itertools import chain
 from construct import *  # pip3 install construct
 from Crypto.Cipher import AES  # pip3 install pycryptodome
-import re
-from itertools import chain
 
 MacVendor = Switch(
     this.MAC[:9],
@@ -201,6 +202,7 @@ class ByteAdapter(Adapter):
 MacAddress = ByteAdapter()
 ReversedMacAddress = ByteAdapter(reverse=True)
 
+
 def normalize_report(report):
     report = re.sub(r"\n\s*Container:\n?", "\n", report, flags=re.DOTALL)
     report = re.sub(r"\n\s*version =[^\n]*\n", "\n", report, flags=re.DOTALL)
@@ -214,3 +216,41 @@ def normalize_report(report):
         lambda m: "    %s" % m.group(1).upper(), report, flags=re.DOTALL
     )
     return report
+
+
+def absolute_humidity(temp_celsius, relative_humidity):
+    """
+    Calculate the absolute humidity in g/m³.
+
+    Parameters:
+    temp_celsius (float): Temperature in degrees Celsius.
+    relative_humidity (float): Relative humidity in percentage (0-100).
+
+    Returns:
+    float: Absolute humidity in g/m³.
+    """
+    return (
+        2.1674 * 6.112 * math.exp(
+            (17.67 * temp_celsius) / (temp_celsius + 243.5)
+        ) * relative_humidity
+    ) / (temp_celsius + 273.15)
+
+
+def dew_point(temp_celsius, relative_humidity):
+    """
+    Calculate the dew point in degrees Celsius: The temperature at which the
+    air reaches 100% relative humidity.
+
+    Parameters:
+    temp_celsius (float): Temperature in degrees Celsius.
+    relative_humidity (float): Relative humidity in percentage (0-100).
+
+    Returns:
+    float: dew point in °C.
+    """
+    alpha = (
+        math.log(relative_humidity / 100)
+        + (17.67 * temp_celsius) / (243.5 + temp_celsius)
+    )
+    dew_point = (243.5 * alpha) / (17.67 - alpha)
+    return dew_point

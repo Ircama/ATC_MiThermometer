@@ -36,7 +36,15 @@ custom_format = Struct(
     "battery_level" / Int8ul,  # 0..100 %
     "battery_level_unit" / Computed("%"),
     "counter" / Int8ul,  # measurement count
-    "flags" / atc_flag
+    "flags" / atc_flag,
+    "absolute_humidity" / Computed(
+        lambda this: absolute_humidity(this.temperature, this.humidity)
+    ),
+    "absolute_humidity_unit" / Computed("g/m³"),
+    "dew_point" / Computed(
+        lambda this: dew_point(this.temperature, this.humidity)
+    ),
+    "dew_point_unit" / Computed("°C"),
 )
 
 # -------------- custom_enc_format ---------------------------------------------
@@ -53,7 +61,15 @@ custom_enc_format = Struct(
             "humidity_unit" / Computed("%"),
             "battery_level" / Int8ul,  # 0..100 %
             "battery_level_unit" / Computed("%"),
-            "flags" / atc_flag
+            "flags" / atc_flag,
+            "absolute_humidity" / Computed(
+                lambda this: absolute_humidity(this.temperature, this.humidity)
+            ),
+            "absolute_humidity_unit" / Computed("g/m³"),
+            "dew_point" / Computed(
+                lambda this: dew_point(this.temperature, this.humidity)
+            ),
+            "dew_point_unit" / Computed("°C"),
         )
     ),
 )
@@ -76,7 +92,15 @@ atc1441_format = Struct(
     "battery_level_unit" / Computed("%"),
     "battery_v" / DecimalNumber(Int16ub, 1000),
     "battery_v_unit" / Computed("V"),
-    "counter" / Int8ub  # frame packet counter
+    "counter" / Int8ub,  # frame packet counter
+    "absolute_humidity" / Computed(
+        lambda this: absolute_humidity(this.temperature, this.humidity)
+    ),
+    "absolute_humidity_unit" / Computed("g/m³"),
+    "dew_point" / Computed(
+        lambda this: dew_point(this.temperature, this.humidity)
+    ),
+    "dew_point_unit" / Computed("°C"),
 )
 
 # -------------- atc1441_enc_format ------------------------------------------------
@@ -100,7 +124,15 @@ atc1441_enc_format = Struct(
                 "out_gpio_trg_flag" / Flag,  # If this flag is set, the output GPIO_TRG pin is controlled according to the set parameters threshold temperature or humidity
                 "battery_level" / BitsInteger(7),  # 0..100 %
                 "battery_level_unit" / Computed("%"),
-            )
+            ),
+            "absolute_humidity" / Computed(
+                lambda this: absolute_humidity(this.temperature, this.humidity)
+            ),
+            "absolute_humidity_unit" / Computed("g/m³"),
+            "dew_point" / Computed(
+                lambda this: dew_point(this.temperature, this.humidity)
+            ),
+            "dew_point_unit" / Computed("°C"),
         )
     ),
 )
@@ -206,6 +238,15 @@ mi_like_data = Struct(  # https://github.com/pvvx/ATC_MiThermometer/blob/master/
                 "temperature_unit" / Computed("°C"),
                 "humidity" / DecimalNumber(Int16ul, 10),
                 "humidity_unit" / Computed("%"),
+                "absolute_humidity" / Computed(lambda this: absolute_humidity(
+                        this.temperature,
+                        this.humidity
+                    )),
+                "absolute_humidity_unit" / Computed("g/m³"),
+                "dew_point" / Computed(
+                    lambda this: dew_point(this.temperature, this.humidity)
+                ),
+                "dew_point_unit" / Computed("°C"),
             ),
             "XIAOMI_DATA_ID_Lock": Struct(  # 0E
                 "type_length" / Const(b"\x01"),
@@ -1205,6 +1246,14 @@ native_temp_hum_v_values = Struct(
     "humidity_unit" / Computed("%"),
     "battery_v" / DecimalNumber(Int16ul, 1000),
     "battery_v_unit" / Computed("V"),
+    "absolute_humidity" / Computed(
+        lambda this: absolute_humidity(this.temperature, this.humidity)
+    ),
+    "absolute_humidity_unit" / Computed("g/m³"),
+    "dew_point" / Computed(
+        lambda this: dew_point(this.temperature, this.humidity)
+    ),
+    "dew_point_unit" / Computed("°C"),
 )
 
 # BLE client connection, characteristic id 66 (comfortable temp and humi):
