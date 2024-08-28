@@ -1,3 +1,4 @@
+#coding=utf-8
 # Library module used by atc_mi_construct.py
 
 import re
