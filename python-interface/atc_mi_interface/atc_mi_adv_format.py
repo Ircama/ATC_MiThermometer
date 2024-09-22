@@ -1,3 +1,7 @@
+#############################################################################
+# atc_mi_adv_format module (only used with bleak)
+#############################################################################
+
 # On each item, "service_data_dict" accepts either "uuid" (like "uuid": 'fcd2')
 # or "uuid_str" (like "uuid_str": '0000fcd2-0000-1000-8000-00805f9b34fb');
 # if the "uuid" string is defined, the related "uuid_str" string is generated
